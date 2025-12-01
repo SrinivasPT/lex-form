@@ -11,15 +11,16 @@ import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.comp
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, DynamicSectionComponent],
     template: `
-        <div class="dynamic-form-container" *ngIf="form()">
+        @if (form()) {
+        <div class="dynamic-form-container">
             <h2>{{ resolvedSchema()?.label }}</h2>
 
             <form [formGroup]="form()!" (ngSubmit)="onSubmit()">
                 <div class="sections-wrapper">
-                    <ng-container *ngFor="let section of resolvedSchema()?.sections">
-                        <app-dynamic-section [config]="section" [parentForm]="form()!">
-                        </app-dynamic-section>
-                    </ng-container>
+                    @for (section of resolvedSchema()?.sections; track section.key) {
+                    <app-dynamic-section [config]="section" [parentForm]="form()!">
+                    </app-dynamic-section>
+                    }
                 </div>
 
                 <div class="form-actions">
@@ -28,6 +29,7 @@ import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.comp
                 </div>
             </form>
         </div>
+        }
     `,
     styles: [
         `

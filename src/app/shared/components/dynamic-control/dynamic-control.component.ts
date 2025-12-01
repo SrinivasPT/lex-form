@@ -22,20 +22,17 @@ import { InputControlComponent } from '../controls/input-control.component';
         // Add other components here as you build them
     ],
     template: `
-        <ng-container *ngIf="isVisible()">
-            <ng-container [ngSwitch]="config.type">
-                <app-input-control *ngSwitchCase="'text'" [config]="config" [group]="group">
-                </app-input-control>
-
-                <app-input-control *ngSwitchCase="'number'" [config]="config" [group]="group">
-                </app-input-control>
-
-                <div *ngSwitchCase="'select'">[Select: {{ config.label }}]</div>
-                <div *ngSwitchCase="'table'">[Table: {{ config.label }}]</div>
-
-                <div *ngSwitchDefault class="unknown-control">Unknown type: {{ config.type }}</div>
-            </ng-container>
-        </ng-container>
+        @if (isVisible()) { @switch (config.type) { @case ('text') {
+        <app-input-control [config]="config" [group]="group"> </app-input-control>
+        } @case ('number') {
+        <app-input-control [config]="config" [group]="group"> </app-input-control>
+        } @case ('select') {
+        <div>[Select: {{ config.label }}]</div>
+        } @case ('table') {
+        <div>[Table: {{ config.label }}]</div>
+        } @default {
+        <div class="unknown-control">Unknown type: {{ config.type }}</div>
+        } } }
     `,
 })
 export class DynamicControlComponent implements OnInit, OnDestroy {

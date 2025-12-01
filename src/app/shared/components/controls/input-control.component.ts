@@ -11,7 +11,9 @@ import { ControlDefinition } from '../../../core/models/form-schema.interface';
         <div [formGroup]="group" class="form-field">
             <label [for]="config.key">
                 {{ config.label }}
-                <span *ngIf="isRequired" class="required">*</span>
+                @if (isRequired) {
+                <span class="required">*</span>
+                }
             </label>
 
             <input
@@ -22,7 +24,9 @@ import { ControlDefinition } from '../../../core/models/form-schema.interface';
                 class="form-input"
             />
 
-            <div *ngIf="hasError" class="error-msg">Field is required</div>
+            @if (hasError) {
+            <div class="error-msg">Field is required</div>
+            }
         </div>
     `,
     styles: [

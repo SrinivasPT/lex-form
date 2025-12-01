@@ -12,13 +12,15 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
     template: `
         <div [style.width]="config.width || '100%'" class="section-card">
             <fieldset class="section-fieldset">
-                <legend *ngIf="config.label">{{ config.label }}</legend>
+                @if (config.label) {
+                <legend>{{ config.label }}</legend>
+                }
 
                 <ng-container [formGroup]="currentGroup">
-                    <ng-container *ngFor="let control of resolvedControls">
-                        <app-dynamic-control [config]="control" [group]="currentGroup">
-                        </app-dynamic-control>
-                    </ng-container>
+                    @for (control of resolvedControls; track control.key) {
+                    <app-dynamic-control [config]="control" [group]="currentGroup">
+                    </app-dynamic-control>
+                    }
                 </ng-container>
             </fieldset>
         </div>
