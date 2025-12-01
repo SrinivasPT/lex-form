@@ -12,6 +12,7 @@ import {
     selector: 'app-dynamic-section',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, DynamicControlComponent],
+    host: { class: 'responsive-col' },
     template: `
         <div class="section-card">
             <fieldset class="section-fieldset">
@@ -33,22 +34,9 @@ import {
             :host {
                 display: block;
                 box-sizing: border-box;
-                min-width: 0;
-                grid-column: span var(--col-span-xs) !important;
+                /* grid-column handled by .responsive-col */
                 /* DEBUG: outline the section host */
                 outline: 1px dashed rgba(0, 0, 0, 0.06);
-            }
-
-            @media (min-width: 768px) {
-                :host {
-                    grid-column: span var(--col-span-md) !important;
-                }
-            }
-
-            @media (min-width: 1024px) {
-                :host {
-                    grid-column: span var(--col-span-lg) !important;
-                }
             }
 
             .section-card {

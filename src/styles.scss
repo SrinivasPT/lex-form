@@ -4,3 +4,24 @@
 *::after {
     box-sizing: border-box;
 }
+
+/* Global Grid Utilities */
+.grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.responsive-col {
+    min-width: 0;
+    grid-column: span var(--col-span-xs) !important;
+
+    @media (min-width: 768px) {
+        grid-column: span var(--col-span-md) !important;
+    }
+
+    @media (min-width: 1024px) {
+        grid-column: span var(--col-span-lg) !important;
+    }
+}

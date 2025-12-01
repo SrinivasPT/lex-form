@@ -27,7 +27,7 @@ import { InputControlComponent } from '../controls/input-control.component';
     ],
     template: `
         @if (isVisible()) {
-        <div class="control-wrapper">
+        <div class="control-wrapper responsive-col">
             @switch (config.type) { @case ('text') {
             <app-input-control [config]="config" [group]="group"> </app-input-control>
             } @case ('number') {
@@ -57,21 +57,8 @@ import { InputControlComponent } from '../controls/input-control.component';
 
             .control-wrapper {
                 box-sizing: border-box;
-                min-width: 0;
                 width: 100%;
-                grid-column: span var(--col-span-xs);
-            }
-
-            @media (min-width: 768px) {
-                .control-wrapper {
-                    grid-column: span var(--col-span-md);
-                }
-            }
-
-            @media (min-width: 1024px) {
-                .control-wrapper {
-                    grid-column: span var(--col-span-lg);
-                }
+                /* grid-column handled by .responsive-col */
             }
 
             .unknown-control {

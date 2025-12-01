@@ -27,12 +27,12 @@ export class AppComponent {
             // SECTION 1: Basic Info (Root Scope) - Responsive width: 12 cols on mobile, 12 on tablet, 6 on desktop
             {
                 label: 'Basic Information',
-                width: [12], // Full width on mobile/tablet, half on desktop
+                width: [6], // Full width on mobile/tablet, half on desktop
                 controls: [
                     // A. Dictionary Lookup (Standard) - Full width on mobile, half on tablet/desktop
                     {
                         key: 'employee.firstName',
-                        width: [12],
+                        width: [6],
                     },
 
                     // B. Dictionary Lookup + Override (Partial) - Full width on mobile, half on tablet/desktop
@@ -67,7 +67,7 @@ export class AppComponent {
             {
                 label: 'Mailing Address',
                 key: 'address', // <--- Creates nested FormGroup
-                width: [12], // Full width on mobile/tablet, half on desktop
+                width: [6], // Full width on mobile/tablet, half on desktop
                 controls: [
                     {
                         key: 'street',
