@@ -5,11 +5,19 @@ import { FormSchema } from './core/models/form-schema.interface';
 
 @Component({
     selector: 'app-root',
+    standalone: true,
     imports: [CommonModule, DynamicFormComponent],
-    templateUrl: './app.html',
-    styleUrl: './app.scss',
+    template: `
+        <div style="padding: 20px; font-family: sans-serif;">
+            <h1>Generic Form Builder (MVP)</h1>
+            <hr />
+
+            <app-dynamic-form [schema]="testSchema" [initialData]="initialValues">
+            </app-dynamic-form>
+        </div>
+    `,
 })
-export class App {
+export class AppComponent {
     // 1. Define the Schema (JSON)
     testSchema: FormSchema = {
         code: 'EMP_001',
@@ -33,8 +41,10 @@ export class App {
                     // C. Custom Logic Control
                     {
                         key: 'hasNickName',
-                        type: 'checkbox',
+                        type: 'checkbox', // You might need to add 'checkbox' to input-control or use text for now if not impl
                         label: 'Do you have a nickname?',
+                        // Temporary hack: if InputControl doesn't support checkbox yet,
+                        // use a standard text input and type "true" to test logic
                     },
 
                     // D. Conditional Field (Logic)
@@ -42,6 +52,7 @@ export class App {
                         key: 'nickName',
                         type: 'text',
                         label: 'Nickname',
+                        // LOGIC: Only show if above field is true
                         visibleWhen: 'model.hasNickName == true',
                         validators: { required: true },
                     },
@@ -51,7 +62,7 @@ export class App {
             // SECTION 2: Address (Nested Scope 'address')
             {
                 label: 'Mailing Address',
-                key: 'address',
+                key: 'address', // <--- Creates nested FormGroup
                 width: '100%',
                 controls: [
                     {
