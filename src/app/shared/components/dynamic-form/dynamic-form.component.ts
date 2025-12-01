@@ -34,9 +34,16 @@ import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.comp
     styles: [
         `
             .sections-wrapper {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: repeat(12, minmax(0, 1fr));
                 gap: 16px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Grid children should respect host grid-column spans */
+            .sections-wrapper > * {
+                min-width: 0;
             }
         `,
     ],

@@ -1,10 +1,14 @@
-import { Component, Input, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, signal, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Subscription, startWith } from 'rxjs';
 
 // Core
 import { ControlDefinition } from '../../../core/models/form-schema.interface';
+import {
+    getResponsiveWidthStyle,
+    getResponsiveGridVars,
+} from '../../../core/utils/responsive-width.util';
 
 // Child Components
 import { ExpressionEvaluatorService } from '../../../core/services/expression-evaluator.service';
@@ -22,18 +26,60 @@ import { InputControlComponent } from '../controls/input-control.component';
         // Add other components here as you build them
     ],
     template: `
-        @if (isVisible()) { @switch (config.type) { @case ('text') {
-        <app-input-control [config]="config" [group]="group"> </app-input-control>
-        } @case ('number') {
-        <app-input-control [config]="config" [group]="group"> </app-input-control>
-        } @case ('select') {
-        <div>[Select: {{ config.label }}]</div>
-        } @case ('table') {
-        <div>[Table: {{ config.label }}]</div>
-        } @default {
-        <div class="unknown-control">Unknown type: {{ config.type }}</div>
-        } } }
+        @if (isVisible()) {
+        <div class="control-wrapper">
+            @switch (config.type) { @case ('text') {
+            <app-input-control [config]="config" [group]="group"> </app-input-control>
+            } @case ('number') {
+            <app-input-control [config]="config" [group]="group"> </app-input-control>
+            } @case ('select') {
+            <div>[Select: {{ config.label }}]</div>
+            } @case ('checkbox') {
+            <div [formGroup]="group" class="checkbox-control">
+                <input type="checkbox" [id]="config.key" [formControlName]="config.key" />
+                <label [for]="config.key">{{ config.label }}</label>
+            </div>
+            } @case ('table') {
+            <div>[Table: {{ config.label }}]</div>
+            } @default {
+            <div class="unknown-control">Unknown type: {{ config.type }}</div>
+            } }
+        </div>
+        }
     `,
+    styles: [
+        `
+            :host {
+                display: contents;
+                /* DEBUG: outline control host */
+                outline: 1px dashed rgba(0, 0, 0, 0.03);
+            }
+
+            .control-wrapper {
+                box-sizing: border-box;
+                min-width: 0;
+                width: 100%;
+                grid-column: span var(--col-span-xs);
+            }
+
+            @media (min-width: 768px) {
+                .control-wrapper {
+                    grid-column: span var(--col-span-md);
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .control-wrapper {
+                    grid-column: span var(--col-span-lg);
+                }
+            }
+
+            .unknown-control {
+                color: red;
+                font-style: italic;
+            }
+        `,
+    ],
 })
 export class DynamicControlComponent implements OnInit, OnDestroy {
     @Input({ required: true }) config!: ControlDefinition;
@@ -44,6 +90,27 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
 
     // Signal for visibility (Reactive UI)
     isVisible = signal<boolean>(true);
+
+    // Get responsive width styles for this control
+    getWidthStyle(): Record<string, string> {
+        return getResponsiveWidthStyle(this.config.width);
+    }
+
+    // Host grid variables
+    @HostBinding('style.--col-span-xs')
+    get hostColXs(): string {
+        return getResponsiveGridVars(this.config.width)['--col-span-xs'];
+    }
+
+    @HostBinding('style.--col-span-md')
+    get hostColMd(): string {
+        return getResponsiveGridVars(this.config.width)['--col-span-md'];
+    }
+
+    @HostBinding('style.--col-span-lg')
+    get hostColLg(): string {
+        return getResponsiveGridVars(this.config.width)['--col-span-lg'];
+    }
 
     ngOnInit() {
         // If there is no visibility rule, we are always visible.

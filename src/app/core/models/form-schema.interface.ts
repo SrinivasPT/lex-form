@@ -11,7 +11,7 @@ export interface FormSchema {
 export interface FormSection {
     label?: string;
     key?: string; // Creates a Nested Data Scope if present
-    width?: string; // e.g., '50%'
+    width?: number | number[]; // 12-point grid scale. Single value or [Mobile, Tablet, Desktop] e.g., 6 or [12, 6, 4]
     controls: ControlConfig[];
 }
 
@@ -24,6 +24,7 @@ export interface ControlDefinition {
     label?: string;
     placeholder?: string;
     hidden?: boolean;
+    width?: number | number[]; // 12-point grid scale. Single value or [Mobile, Tablet, Desktop] e.g., 6 or [12, 6, 4]
 
     // Domain / Data Source
     domainConfig?: {
