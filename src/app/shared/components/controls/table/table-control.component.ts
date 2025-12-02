@@ -186,7 +186,7 @@ export interface FormActionEvent {
             .data-table td ::ng-deep label {
                 display: none !important;
             }
-            
+
             /* Remove margin from form fields inside table */
             .data-table td ::ng-deep .form-field {
                 margin-bottom: 0 !important;
