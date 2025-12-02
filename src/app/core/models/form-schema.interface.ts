@@ -15,6 +15,31 @@ export interface FormSection {
     controls: ControlConfig[];
 }
 
+export interface TablePaginationConfig {
+    enabled: boolean;
+    pageSize: number;
+}
+
+export interface TableConfig extends ControlDefinition {
+    type: 'table';
+
+    // Features
+    pagination?: TablePaginationConfig;
+    searchable?: boolean;
+    sortable?: boolean;
+
+    // Actions
+    rowActions?: ActionDefinition[]; // Buttons per row
+    headerActions?: ActionDefinition[]; // Buttons in toolbar
+
+    // Visuals
+    maxInlineActions?: number; // Defaults to 3
+    addLabel?: string;
+
+    // New: Mobile Strategy
+    mobileBehavior?: 'scroll' | 'card' | 'accordion'; // Default: 'card'
+}
+
 // 2. The Control Definitions
 export type ControlConfig = string | ControlDefinition;
 
@@ -47,4 +72,13 @@ export interface ControlDefinition {
 
     // Recursion (For Tables/Groups)
     rowConfig?: ControlConfig[];
+}
+
+export interface ActionDefinition {
+    id: string; // 'edit', 'delete', 'custom'
+    label?: string; // 'Remove'
+    icon?: string; // 'fa fa-trash'
+    cssClass?: string; // 'btn-danger'
+    visibleWhen?: string; // 'row.status == "draft"'
+    ariaLabel?: string; // Accessibility label
 }

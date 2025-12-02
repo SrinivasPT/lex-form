@@ -37,6 +37,10 @@ export class AppComponent implements OnInit {
         address: {
             city: 'Hyderabad',
         },
+        dependents: [
+            { name: 'Jane', relation: 'spouse', age: 30 },
+            { name: 'Jimmy', relation: 'child', age: 5 },
+        ],
     };
 
     ngOnInit() {

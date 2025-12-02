@@ -56,6 +56,57 @@
                             "width": [12, 6]
                         }
                     ]
+                },
+                {
+                    "label": "Dependents",
+                    "width": [12],
+                    "controls": [
+                        {
+                            "key": "dependents",
+                            "type": "table",
+                            "label": "Dependents List",
+                            "width": [12],
+                            "searchable": true,
+                            "sortable": true,
+                            "pagination": {
+                                "enabled": true,
+                                "pageSize": 5
+                            },
+                            "rowConfig": [
+                                {
+                                    "key": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "width": [4]
+                                },
+                                {
+                                    "key": "relation",
+                                    "type": "select",
+                                    "label": "Relation",
+                                    "width": [4],
+                                    "options": [
+                                        { "label": "Spouse", "value": "spouse" },
+                                        { "label": "Child", "value": "child" },
+                                        { "label": "Parent", "value": "parent" }
+                                    ]
+                                },
+                                {
+                                    "key": "age",
+                                    "type": "number",
+                                    "label": "Age",
+                                    "width": [2]
+                                }
+                            ],
+                            "rowActions": [
+                                {
+                                    "id": "delete",
+                                    "label": "Delete",
+                                    "icon": "fa fa-trash",
+                                    "cssClass": "btn-danger"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

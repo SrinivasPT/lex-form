@@ -17,7 +17,7 @@ import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.comp
 
             <form [formGroup]="form()!" (ngSubmit)="onSubmit()">
                 <div class="sections-wrapper">
-                    @for (section of resolvedSchema()?.sections; track section.key) {
+                    @for (section of resolvedSchema()?.sections; track section.label || $index) {
                     <app-dynamic-section [config]="section" [parentForm]="form()!">
                     </app-dynamic-section>
                     }
@@ -70,7 +70,7 @@ export class DynamicFormComponent implements OnInit {
 
         // 3. Patch Initial Data (if provided)
         if (this.initialData) {
-            formGroup.patchValue(this.initialData);
+            this.formGenerator.patchForm(formGroup, this.initialData, compiled);
         }
 
         this.form.set(formGroup);

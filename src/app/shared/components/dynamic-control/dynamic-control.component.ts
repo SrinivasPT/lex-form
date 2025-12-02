@@ -14,7 +14,7 @@ import {
 import { ExpressionEvaluatorService } from '../../../core/services/expression-evaluator.service';
 import { InputControlComponent } from '../controls/input-control.component';
 import { SelectControlComponent } from '../controls/select-control.component';
-// import { TableControlComponent } from ... (Future)
+import { TableControlComponent } from '../controls/table/table-control.component';
 
 @Component({
     selector: 'app-dynamic-control',
@@ -24,7 +24,7 @@ import { SelectControlComponent } from '../controls/select-control.component';
         ReactiveFormsModule,
         InputControlComponent,
         SelectControlComponent,
-        // Add other components here as you build them
+        TableControlComponent,
     ],
     template: `
         @if (isVisible()) {
@@ -41,7 +41,8 @@ import { SelectControlComponent } from '../controls/select-control.component';
                 <label [for]="config.key">{{ config.label }}</label>
             </div>
             } @case ('table') {
-            <div>[Table: {{ config.label }}]</div>
+            <app-table-control [config]="asTableConfig(config)" [parentGroup]="group">
+            </app-table-control>
             } @default {
             <div class="unknown-control">Unknown type: {{ config.type }}</div>
             } }
@@ -82,6 +83,11 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     // Get responsive width styles for this control
     getWidthStyle(): Record<string, string> {
         return getResponsiveWidthStyle(this.config.width);
+    }
+
+    asTableConfig(c: ControlDefinition): any {
+        console.log('asTableConfig called', c);
+        return c;
     }
 
     // Host grid variables
