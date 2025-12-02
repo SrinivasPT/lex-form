@@ -1,0 +1,81 @@
+{
+    "schemas": [
+        {
+            "id": "EMP_001",
+            "code": "EMP_001",
+            "version": "1.0.0",
+            "label": "New Employee Registration",
+            "sections": [
+                {
+                    "label": "Basic Information",
+                    "width": [12],
+                    "controls": [
+                        {
+                            "key": "employee.firstName",
+                            "width": [6]
+                        },
+                        {
+                            "key": "employee.lastName",
+                            "label": "Surname (Overridden Label)",
+                            "width": [6]
+                        },
+                        {
+                            "key": "hasNickName",
+                            "type": "checkbox",
+                            "label": "Do you have a nickname?",
+                            "width": 6
+                        },
+                        {
+                            "key": "nickName",
+                            "type": "text",
+                            "label": "Nickname",
+                            "visibleWhen": "model.hasNickName == true",
+                            "validators": { "required": true },
+                            "width": [12, 8, 6]
+                        }
+                    ]
+                },
+                {
+                    "label": "Mailing Address",
+                    "key": "address",
+                    "width": [6],
+                    "controls": [
+                        {
+                            "key": "street",
+                            "type": "text",
+                            "label": "Street Name",
+                            "width": 12
+                        },
+                        {
+                            "key": "city",
+                            "type": "text",
+                            "label": "City",
+                            "width": [12, 12]
+                        },
+                        {
+                            "key": "address.country",
+                            "width": [12, 6]
+                        },
+                        {
+                            "key": "address.state",
+                            "width": [12, 6]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "countries": [
+        { "code": "US", "displayText": "United States" },
+        { "code": "CA", "displayText": "Canada" },
+        { "code": "UK", "displayText": "United Kingdom" }
+    ],
+    "states": [
+        { "country": "US", "code": "NY", "displayText": "New York" },
+        { "country": "US", "code": "CA", "displayText": "California" },
+        { "country": "US", "code": "TX", "displayText": "Texas" },
+        { "country": "CA", "code": "ON", "displayText": "Ontario" },
+        { "country": "CA", "code": "QC", "displayText": "Quebec" },
+        { "country": "CA", "code": "BC", "displayText": "British Columbia" }
+    ]
+}

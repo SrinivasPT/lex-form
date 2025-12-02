@@ -13,7 +13,7 @@ import {
 // Child Components
 import { ExpressionEvaluatorService } from '../../../core/services/expression-evaluator.service';
 import { InputControlComponent } from '../controls/input-control.component';
-// import { SelectControlComponent } from ... (Future)
+import { SelectControlComponent } from '../controls/select-control.component';
 // import { TableControlComponent } from ... (Future)
 
 @Component({
@@ -23,6 +23,7 @@ import { InputControlComponent } from '../controls/input-control.component';
         CommonModule,
         ReactiveFormsModule,
         InputControlComponent,
+        SelectControlComponent,
         // Add other components here as you build them
     ],
     template: `
@@ -33,7 +34,7 @@ import { InputControlComponent } from '../controls/input-control.component';
             } @case ('number') {
             <app-input-control [config]="config" [group]="group"> </app-input-control>
             } @case ('select') {
-            <div>[Select: {{ config.label }}]</div>
+            <app-select-control [config]="config" [group]="group"> </app-select-control>
             } @case ('checkbox') {
             <div [formGroup]="group" class="checkbox-control">
                 <input type="checkbox" [id]="config.key" [formControlName]="config.key" />

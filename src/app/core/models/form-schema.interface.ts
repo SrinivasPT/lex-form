@@ -26,6 +26,9 @@ export interface ControlDefinition {
     hidden?: boolean;
     width?: number | number[]; // 12-point grid scale. Single value or [Mobile, Tablet, Desktop] e.g., 6 or [12, 6, 4]
 
+    // Static Options (Simple Lists)
+    options?: { label: string; value: any }[];
+
     // Domain / Data Source
     domainConfig?: {
         categoryCode: string;
