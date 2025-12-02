@@ -18,6 +18,13 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         validators: { required: true },
     },
 
+    'employee.hasNickName': {
+        key: 'hasNickName',
+        type: 'checkbox',
+        label: 'Has Nickname',
+        validators: { required: true },
+    },
+
     // 2. Standard Email
     'employee.email': {
         key: 'email',
@@ -26,26 +33,41 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         validators: { required: true, email: true },
     },
 
-    // 3. Domain-Driven Select (Country)
-    'address.country': {
-        key: 'countryId',
-        type: 'select',
-        label: 'Country',
+    'address.street': {
+        key: 'street',
+        type: 'text',
+        label: 'Street Address',
         domainConfig: {
             categoryCode: 'COUNTRY',
         },
     },
 
+    'address.city': {
+        key: 'city',
+        type: 'text',
+        label: 'City',
+    },
+
+    // 3. Domain-Driven Select (Country)
+    'address.countryCode': {
+        key: 'countryCode',
+        type: 'select',
+        label: 'Country',
+        domainConfig: {
+            categoryCode: 'country',
+        },
+    },
+
     // 4. Dependent Select (State)
-    'address.state': {
-        key: 'stateId',
+    'address.stateCode': {
+        key: 'stateCode',
         type: 'select',
         label: 'State/Province',
         domainConfig: {
-            categoryCode: 'STATE',
-            dependentOn: 'countryId', // References the key of the parent
+            categoryCode: 'state',
+            dependentOn: 'countryCode', // References the key of the parent
         },
         // Standard logic: Disable until country is picked
-        disabledWhen: 'model.countryId == null',
+        disabledWhen: 'model.countryCode == null',
     },
 };

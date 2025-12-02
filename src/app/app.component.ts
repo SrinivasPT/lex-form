@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DynamicFormComponent } from './shared/components/dynamic-form/dynamic-form.component';
 import { FormSchema } from './core/models/form-schema.interface';
+import { Observable, catchError, of, tap } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -13,19 +14,21 @@ import { FormSchema } from './core/models/form-schema.interface';
             <h1>Generic Form Builder (MVP)</h1>
             <hr />
 
-            @if (testSchema) {
-            <app-dynamic-form [schema]="testSchema" [initialData]="initialValues">
-            </app-dynamic-form>
+            @if (schema$ | async; as schema) {
+            <app-dynamic-form [schema]="schema" [initialData]="initialValues"> </app-dynamic-form>
             } @else {
             <p>Loading schema...</p>
-            }
+            @if (error()) {
+            <p style="color: red">Error: {{ error() }}</p>
+            } }
         </div>
     `,
 })
 export class AppComponent implements OnInit {
     private http = inject(HttpClient);
 
-    testSchema: FormSchema | null = null;
+    schema$!: Observable<FormSchema | null>;
+    error = signal<string | null>(null);
 
     // 2. Mock Initial Data (Optional)
     initialValues = {
@@ -37,8 +40,14 @@ export class AppComponent implements OnInit {
     };
 
     ngOnInit() {
-        this.http.get<FormSchema>('http://localhost:3000/schemas/EMP_001').subscribe((schema) => {
-            this.testSchema = schema;
-        });
+        console.log('AppComponent initialized, fetching schema...');
+        this.schema$ = this.http.get<FormSchema>('http://localhost:3000/schemas/EMP_001').pipe(
+            tap((schema) => console.log('Schema fetched:', schema)),
+            catchError((err) => {
+                console.error('Error fetching schema:', err);
+                this.error.set(err.message || 'Unknown error');
+                return of(null);
+            })
+        );
     }
 }

@@ -19,6 +19,7 @@ export interface FormSection {
 export type ControlConfig = string | ControlDefinition;
 
 export interface ControlDefinition {
+    code?: string;
     key: string;
     type?: ControlType;
     label?: string;

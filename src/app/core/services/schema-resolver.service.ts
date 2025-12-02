@@ -38,7 +38,7 @@ export class SchemaResolverService {
         }
 
         // It is an object. Check if the 'key' matches a Library Definition.
-        const libraryDef = GLOBAL_CONTROL_LIBRARY[config.key];
+        const libraryDef = GLOBAL_CONTROL_LIBRARY[config.code as string];
 
         if (libraryDef) {
             // MERGE: Library Base + Config Overrides
