@@ -65,7 +65,7 @@
                             "key": "dependents",
                             "type": "table",
                             "label": "Dependents List",
-                            "width": [12],
+                            "width": [8],
                             "searchable": true,
                             "sortable": true,
                             "pagination": {

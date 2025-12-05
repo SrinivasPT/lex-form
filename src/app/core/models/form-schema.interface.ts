@@ -56,11 +56,8 @@ export interface ControlDefinition {
     options?: { label: string; value: any }[];
 
     // Domain / Data Source
-    domainConfig?: {
-        categoryCode: string;
-        dependentOn?: string;
-        cacheTtl?: number;
-    };
+    categoryCode: string;
+    dependentOn?: string;
 
     // Logic Expressions (Safe Strings)
     visibleWhen?: string; // e.g., "model.age > 18"
