@@ -1,0 +1,343 @@
+{
+    "code": "control_form",
+    "version": "1.0.0",
+    "label": "Control Form",
+    "sections": [
+        {
+            "label": "Controls",
+            "key": "control",
+            "type": "GROUP",
+            "width": "[12]",
+            "controls": [
+                {
+                    "code": "control.table",
+                    "key": "Control",
+                    "type": "TABLE",
+                    "label": "Control",
+                    "required": false,
+                    "readonly": false,
+                    "controls": [
+                        {
+                            "code": "control.code",
+                            "key": "Code",
+                            "type": "TEXT",
+                            "label": "Code",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.form_code",
+                            "key": "FormCode",
+                            "type": "TEXT",
+                            "label": "Form Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.parent_control_code",
+                            "key": "ParentControlCode",
+                            "type": "TEXT",
+                            "label": "Parent Control Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.atomic_level_code",
+                            "key": "AtomicLevelCode",
+                            "type": "TEXT",
+                            "label": "Atomic Level Code",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 20
+                        },
+                        {
+                            "code": "control.type",
+                            "key": "Type",
+                            "type": "TEXT",
+                            "label": "Type",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 32
+                        },
+                        {
+                            "code": "control.key",
+                            "key": "Key",
+                            "type": "TEXT",
+                            "label": "Key",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.label",
+                            "key": "Label",
+                            "type": "TEXT",
+                            "label": "Label",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 255
+                        },
+                        {
+                            "code": "control.placeholder",
+                            "key": "Placeholder",
+                            "type": "TEXT",
+                            "label": "Placeholder",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 255
+                        },
+                        {
+                            "code": "control.help_text",
+                            "key": "HelpText",
+                            "type": "TEXT",
+                            "label": "Help Text",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 500
+                        },
+                        {
+                            "code": "control.sort_order",
+                            "key": "SortOrder",
+                            "type": "NUMBER",
+                            "label": "Sort Order",
+                            "required": true,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.layout_config",
+                            "key": "LayoutConfig",
+                            "type": "TEXT",
+                            "label": "Layout Config",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": -1
+                        },
+                        {
+                            "code": "control.source_table",
+                            "key": "SourceTable",
+                            "type": "TEXT",
+                            "label": "Source Table",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.source_column",
+                            "key": "SourceColumn",
+                            "type": "TEXT",
+                            "label": "Source Column",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.source_data_type",
+                            "key": "SourceDataType",
+                            "type": "TEXT",
+                            "label": "Source Data Type",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 64
+                        },
+                        {
+                            "code": "control.category_code",
+                            "key": "CategoryCode",
+                            "type": "TEXT",
+                            "label": "Category Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.dependent_on",
+                            "key": "DependentOn",
+                            "type": "TEXT",
+                            "label": "Dependent On",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 128
+                        },
+                        {
+                            "code": "control.visible_when",
+                            "key": "VisibleWhen",
+                            "type": "TEXT",
+                            "label": "Visible When",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": -1
+                        },
+                        {
+                            "code": "control.disabled_when",
+                            "key": "DisabledWhen",
+                            "type": "TEXT",
+                            "label": "Disabled When",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": -1
+                        },
+                        {
+                            "code": "control.required_when",
+                            "key": "RequiredWhen",
+                            "type": "TEXT",
+                            "label": "Required When",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": -1
+                        },
+                        {
+                            "code": "control.is_required",
+                            "key": "IsRequired",
+                            "type": "CHECKBOX",
+                            "label": "Is Required",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.is_readonly",
+                            "key": "IsReadonly",
+                            "type": "CHECKBOX",
+                            "label": "Is Readonly",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.min_val",
+                            "key": "MinVal",
+                            "type": "NUMBER",
+                            "label": "Min Val",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.max_val",
+                            "key": "MaxVal",
+                            "type": "NUMBER",
+                            "label": "Max Val",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.min_length",
+                            "key": "MinLength",
+                            "type": "NUMBER",
+                            "label": "Min Length",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.max_length",
+                            "key": "MaxLength",
+                            "type": "NUMBER",
+                            "label": "Max Length",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.pattern",
+                            "key": "Pattern",
+                            "type": "TEXT",
+                            "label": "Pattern",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 255
+                        },
+                        {
+                            "code": "control.properties_json",
+                            "key": "PropertiesJson",
+                            "type": "TEXT",
+                            "label": "Properties Json",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": -1
+                        },
+                        {
+                            "code": "control.guid",
+                            "key": "Guid",
+                            "type": "TEXT",
+                            "label": "Guid",
+                            "required": false,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.sys_start_time",
+                            "key": "SysStartTime",
+                            "type": "DATE",
+                            "label": "Sys Start Time",
+                            "required": true,
+                            "readonly": false
+                        },
+                        {
+                            "code": "control.sys_end_time",
+                            "key": "SysEndTime",
+                            "type": "DATE",
+                            "label": "Sys End Time",
+                            "required": true,
+                            "readonly": false
+                        }
+                    ]
+                },
+                {
+                    "code": "form.code",
+                    "key": "Code",
+                    "type": "TEXT",
+                    "label": "Code",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 128
+                },
+                {
+                    "code": "form.version",
+                    "key": "Version",
+                    "type": "TEXT",
+                    "label": "Version",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 32
+                },
+                {
+                    "code": "form.label",
+                    "key": "Label",
+                    "type": "TEXT",
+                    "label": "Label",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 255
+                },
+                {
+                    "code": "form.description",
+                    "key": "Description",
+                    "type": "TEXT",
+                    "label": "Description",
+                    "required": false,
+                    "readonly": false,
+                    "maxLength": -1
+                },
+                {
+                    "code": "form.is_published",
+                    "key": "IsPublished",
+                    "type": "CHECKBOX",
+                    "label": "Is Published",
+                    "required": false,
+                    "readonly": false
+                },
+                {
+                    "code": "form.guid",
+                    "key": "Guid",
+                    "type": "TEXT",
+                    "label": "Guid",
+                    "required": false,
+                    "readonly": false
+                }
+            ]
+        }
+    ]
+}
