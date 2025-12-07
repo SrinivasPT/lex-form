@@ -89,7 +89,7 @@ export interface FormActionEvent {
                                 *ngFor="let col of config.controls"
                                 [attr.data-label]="asControlDef(col).label"
                             >
-                                <ng-container [ngSwitch]="asControlDef(col).type">
+                                <ng-container [ngSwitch]="normalizeType(asControlDef(col).type)">
                                     <app-input-control
                                         *ngSwitchCase="'text'"
                                         [config]="asControlDef(col)"
@@ -97,6 +97,11 @@ export interface FormActionEvent {
                                     ></app-input-control>
                                     <app-input-control
                                         *ngSwitchCase="'number'"
+                                        [config]="asControlDef(col)"
+                                        [group]="asGroup(rowWrapper.control)"
+                                    ></app-input-control>
+                                    <app-input-control
+                                        *ngSwitchCase="'date'"
                                         [config]="asControlDef(col)"
                                         [group]="asGroup(rowWrapper.control)"
                                     ></app-input-control>
@@ -398,12 +403,15 @@ export class TableControlComponent implements OnInit {
         // 1. Create Data (Empty or Defaults)
         // NOTE: In a real app, you might want default values from schema
         const newGroup = this.createNewRowGroup();
+        console.log('addRow: newGroup created', newGroup, newGroup.controls);
 
         // 2. Add to Array
         this.getFormArray().push(newGroup);
+        console.log('addRow: FormArray length after push', this.getFormArray().length);
 
         // 3. Trigger Signal Update
         this.arrayLength.update((n) => n + 1);
+        console.log('addRow: arrayLength updated to', this.arrayLength());
 
         // 4. Jump to last page if paginated
         if (this.config.pagination?.enabled) {
@@ -471,10 +479,22 @@ export class TableControlComponent implements OnInit {
 
     // Internal helper to create a new row form group based on columns
     private createNewRowGroup(): FormGroup {
-        return this.formGen.createRowGroup(this.config.controls as any[]);
+        console.log('createNewRowGroup: config.controls', this.config.controls);
+        const group = this.formGen.createRowGroup(this.config.controls as any[]);
+        console.log(
+            'createNewRowGroup: created group',
+            group,
+            'with controls:',
+            Object.keys(group.controls)
+        );
+        return group;
     }
 
     asControlDef(col: any): any {
         return col;
+    }
+
+    normalizeType(type: string): string {
+        return type?.toLowerCase() || 'text';
     }
 }

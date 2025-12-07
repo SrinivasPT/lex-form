@@ -17,27 +17,20 @@ export class SchemaResolverService {
     resolve(schema: FormSchema): FormSchema {
         return {
             ...schema,
-            sections: schema.sections.map((section) => this.resolveSection(section)),
-        };
-    }
-
-    private resolveSection(section: FormSection): FormSection {
-        return {
-            ...section,
-            // Recursively resolve all controls in this section
-            controls: section.controls.map((c) => this.resolveControl(c)),
+            sections: schema.sections.map((section) => this.resolveControl(section)),
         };
     }
 
     /**
      * The Core Logic: String lookup vs. Object Merge
+     * Now handles all controls uniformly - sections, groups, tables, base controls
      */
     private resolveControl(config: ControlConfig): ControlDefinition {
         if (typeof config === 'string') {
             return { ...(GLOBAL_CONTROL_LIBRARY[config] || this.createFallback(config)) };
         }
 
-        // It is an object. Check if the 'key' matches a Library Definition.
+        // It is an object. Check if the 'code' matches a Library Definition.
         const libraryDef = GLOBAL_CONTROL_LIBRARY[config.code as string];
 
         if (libraryDef) {
@@ -45,15 +38,16 @@ export class SchemaResolverService {
             // Config wins (Right side of spread)
             const merged = { ...libraryDef, ...config };
 
-            // Special handling: If type is table, we still need to recurse
-            if (merged.type === 'table' && merged.controls) {
+            // Recursively resolve children for group/table controls
+            if (merged.controls) {
                 merged.controls = merged.controls.map((c) => this.resolveControl(c));
             }
             return merged;
         }
 
         // It's a purely custom control not in the library
-        if (config.type === 'table' && config.controls) {
+        // Recursively resolve children if present
+        if (config.controls) {
             config.controls = config.controls.map((c) => this.resolveControl(c));
         }
 

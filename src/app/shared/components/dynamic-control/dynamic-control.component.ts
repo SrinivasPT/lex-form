@@ -128,6 +128,7 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
 
     private evaluator = inject(ExpressionEvaluatorService);
     private formGenerator = inject(FormGeneratorService);
+    private fb = inject(FormBuilder);
     private sub?: Subscription;
 
     // Signal for visibility (Reactive UI)
@@ -189,8 +190,7 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
 
         // Create a wrapper FormGroup for child components
         // Child components expect a FormGroup with a control at config.key
-        const fb = inject(FormBuilder);
-        const wrapper = fb.group({
+        const wrapper = this.fb.group({
             [this.config.key]: control,
         });
         this.wrapperGroup.set(wrapper);

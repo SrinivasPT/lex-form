@@ -19,17 +19,14 @@ export interface FormSchema {
     code: string;
     version: string;
     label: string;
-    sections: FormSection[];
+    sections: ControlDefinition[]; // Sections are just controls!
 }
 
-export interface FormSection {
-    code?: string;
-    label?: string;
-    key?: string; // Creates a Nested Data Scope if present
-    type?: ControlType; // Sections can be explicit group controls
-    width?: number | number[] | string; // 12-point grid scale or string like "[12]"
-    required?: boolean;
-    readonly?: boolean;
+/**
+ * @deprecated Use ControlDefinition directly. Sections are just controls with type='group'
+ * Kept for backward compatibility
+ */
+export interface FormSection extends ControlDefinition {
     controls: ControlConfig[];
 }
 

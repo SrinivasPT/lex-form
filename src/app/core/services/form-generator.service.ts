@@ -25,27 +25,10 @@ export class FormGeneratorService {
     }
 
     toFormGroup(schema: FormSchema): FormGroup {
-        const structure: any = {};
         const controlMap = new Map<string, string>(); // controlKey -> dataPath
 
-        // Treat each section as a potential group control
-        schema.sections.forEach((section) => {
-            // Section has key - creates a nested group
-            if (section.key) {
-                const sectionControls: any = {};
-                this.buildControlsInStructure(
-                    section.controls,
-                    sectionControls,
-                    controlMap,
-                    section.key
-                );
-                structure[section.key] = this.fb.group(sectionControls);
-                controlMap.set(section.key, section.key);
-            } else {
-                // Section without key - controls go to root level
-                this.buildControlsInStructure(section.controls, structure, controlMap, undefined);
-            }
-        });
+        // Sections are just controls - treat them uniformly
+        const structure = this.buildControls(schema.sections as any[], controlMap, '');
 
         const formGroup = this.fb.group(structure);
         // Attach metadata to FormGroup for later reference
@@ -55,115 +38,53 @@ export class FormGeneratorService {
         return formGroup;
     }
 
-    private buildControlsInStructure(
+    /**
+     * Recursively build controls structure
+     * Everything is a control - sections, groups, inputs, etc.
+     */
+    private buildControls(
         controls: ControlConfig[],
-        structure: any,
         controlMap: Map<string, string>,
-        parentPath?: string
-    ) {
+        parentPath: string
+    ): any {
+        const structure: any = {};
+
         controls.forEach((c: ControlConfig) => {
             if (typeof c === 'string') return;
             const control = c as ControlDefinition;
 
-            // Normalize control type to lowercase
+            // Skip controls without key
+            if (!control.key) return;
+
             const normalizedType = this.normalizeType(control.type);
 
-            // Determine the data path for this control
-            const dataPath = this.resolveDataPath(control, parentPath);
+            // Calculate data path
+            const dataPath = control.dataPath
+                ? control.dataPath
+                : parentPath
+                ? `${parentPath}.${control.key}`
+                : control.key;
 
-            // Store mapping from control key to data path
+            // Store in map
             controlMap.set(control.key, dataPath);
 
-            // Handle different control types
-            if (normalizedType === 'group') {
-                // Recursive group - create nested FormGroup
-                this.createNestedGroup(structure, dataPath, control, controlMap);
+            // Build the control based on type
+            if (normalizedType === 'group' && control.controls) {
+                // GROUP: Recursively build children
+                structure[control.key] = this.fb.group(
+                    this.buildControls(control.controls, controlMap, dataPath)
+                );
+            } else if (normalizedType === 'table') {
+                // TABLE: FormArray
+                structure[control.key] = this.fb.array([], this.getValidators(control));
             } else {
-                // Base control (text, number, checkbox, select, table, etc.)
-                this.ensureControlAtPath(structure, dataPath, control);
+                // BASE CONTROL: FormControl
+                const initialValue = normalizedType === 'checkbox' ? false : '';
+                structure[control.key] = new FormControl(initialValue, this.getValidators(control));
             }
         });
-    }
 
-    private resolveDataPath(control: ControlDefinition, parentPath?: string): string {
-        // If control has explicit dataPath, use it
-        if (control.dataPath) {
-            return control.dataPath;
-        }
-
-        // Otherwise, build from parent hierarchy
-        if (parentPath) {
-            return `${parentPath}.${control.key}`;
-        }
-
-        return control.key;
-    }
-
-    private createNestedGroup(
-        structure: any,
-        path: string,
-        control: ControlDefinition,
-        controlMap: Map<string, string>
-    ) {
-        const parts = path.split('.');
-        let current = structure;
-
-        // Navigate/create nested structure up to parent
-        for (let i = 0; i < parts.length - 1; i++) {
-            const part = parts[i];
-            if (!current[part]) {
-                current[part] = {};
-            }
-            current = current[part];
-        }
-
-        // Create nested group for this control
-        const finalKey = parts[parts.length - 1];
-        const groupStructure: any = {};
-
-        // Recursively build child controls
-        if (control.controls && control.controls.length > 0) {
-            this.buildControlsInStructure(control.controls, groupStructure, controlMap, path);
-        }
-
-        current[finalKey] = this.fb.group(groupStructure);
-    }
-
-    private ensureControlAtPath(structure: any, path: string, control: ControlDefinition) {
-        const parts = path.split('.');
-        let current = structure;
-
-        // Navigate/create nested structure
-        for (let i = 0; i < parts.length - 1; i++) {
-            const part = parts[i];
-            if (!current[part]) {
-                current[part] = {};
-            } else if (
-                typeof current[part] !== 'object' ||
-                current[part] instanceof FormControl ||
-                current[part] instanceof FormArray
-            ) {
-                // Path conflict - a control already exists at an intermediate path
-                console.warn(
-                    `Path conflict at ${parts
-                        .slice(0, i + 1)
-                        .join('.')}: cannot create nested structure`
-                );
-                return;
-            }
-            current = current[part];
-        }
-
-        // Add control at final location
-        const finalKey = parts[parts.length - 1];
-        const normalizedType = this.normalizeType(control.type);
-
-        if (normalizedType === 'table') {
-            current[finalKey] = this.fb.array([], this.getValidators(control));
-        } else {
-            const initialValue = normalizedType === 'checkbox' ? false : '';
-            current[finalKey] = new FormControl(initialValue, this.getValidators(control));
-        }
+        return structure;
     }
 
     // Helper method to get control by its key (resolves to actual data path location)
@@ -222,50 +143,53 @@ export class FormGeneratorService {
 
     // --- Data Patching & Row Creation ---
 
-    createRowGroup(controls: ControlDefinition[]): FormGroup {
+    createRowGroup(controls?: ControlDefinition[]): FormGroup {
         const group: any = {};
+
+        if (!controls || controls.length === 0) {
+            // Return empty group if no controls defined
+            console.warn(
+                'Table control has no column definitions (controls property is empty or undefined)'
+            );
+            return this.fb.group(group);
+        }
+
         controls.forEach((col) => {
             // Default empty value
-            group[col.key] = [''];
+            const normalizedType = this.normalizeType(col.type);
+            const initialValue = normalizedType === 'checkbox' ? false : '';
+            group[col.key] = [initialValue, this.getValidators(col)];
         });
         return this.fb.group(group);
     }
 
     patchForm(group: FormGroup, data: any, schema: FormSchema) {
-        // 1. Handle Arrays (Tables) and nested Groups recursively
-        schema.sections.forEach((section) => {
-            this.patchControlsRecursively(group, data, section.controls, section.key);
-        });
+        // Recursively patch tables and groups, then patch values
+        this.patchControlsRecursively(group, data, schema.sections as any[]);
 
-        // 2. Standard patch for the rest - since form structure matches data structure now,
-        //    patchValue will work correctly
+        // Standard patch for all controls
         group.patchValue(data);
     }
 
-    private patchControlsRecursively(
-        group: FormGroup,
-        data: any,
-        controls: ControlConfig[],
-        parentPath?: string
-    ) {
+    private patchControlsRecursively(group: FormGroup, data: any, controls: ControlConfig[]) {
         controls.forEach((c: ControlConfig) => {
             if (typeof c === 'string') return;
 
             const control = c as ControlDefinition;
-            const dataPath = this.resolveDataPath(control, parentPath);
+            if (!control.key) return;
+
             const normalizedType = this.normalizeType(control.type);
 
             if (normalizedType === 'table') {
-                // Get the array data from the data object
-                const tableData = this.getValueByPath(data, dataPath);
+                // Handle table (FormArray) - needs special patching
+                const tableData = data?.[control.key];
 
                 if (Array.isArray(tableData)) {
-                    const formArray = group.get(dataPath) as FormArray;
+                    const formArray = group.get(control.key) as FormArray;
                     if (!formArray) return;
 
-                    // Clear existing items
+                    // Clear and repopulate
                     formArray.clear();
-
                     tableData.forEach((rowItem: any) => {
                         if (control.controls) {
                             const rowGroup = this.createRowGroup(
@@ -277,27 +201,12 @@ export class FormGeneratorService {
                     });
                 }
             } else if (normalizedType === 'group' && control.controls) {
-                // Recursively handle nested group controls
-                this.patchControlsRecursively(group, data, control.controls, dataPath);
+                // Recursively patch nested groups
+                const nestedGroup = group.get(control.key) as FormGroup;
+                if (nestedGroup && data?.[control.key]) {
+                    this.patchControlsRecursively(nestedGroup, data[control.key], control.controls);
+                }
             }
         });
-    }
-
-    // Helper to get nested value from object using dot notation path
-    private getValueByPath(obj: any, path: string): any {
-        if (!obj || !path) return undefined;
-
-        const keys = path.split('.');
-        let current = obj;
-
-        for (const key of keys) {
-            if (current && typeof current === 'object' && key in current) {
-                current = current[key];
-            } else {
-                return undefined;
-            }
-        }
-
-        return current;
     }
 }

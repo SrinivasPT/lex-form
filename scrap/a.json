@@ -1,0 +1,317 @@
+{
+    "code": "employee_form",
+    "version": "1.0.0",
+    "label": "Employee Form",
+    "sections": [
+        {
+            "label": "Employee Information",
+            "key": "employee",
+            "type": "GROUP",
+            "width": "[12]",
+            "controls": [
+                {
+                    "code": "employee.id",
+                    "key": "Id",
+                    "type": "TEXT",
+                    "label": "Id",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 50,
+                    "width": "[4]"
+                },
+                {
+                    "code": "employee.first_name",
+                    "key": "FirstName",
+                    "type": "TEXT",
+                    "label": "First Name",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 100,
+                    "width": "[6]"
+                },
+                {
+                    "code": "employee_address_section",
+                    "key": "address",
+                    "type": "GROUP",
+                    "label": "Address Information",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[12]",
+                    "controls": [
+                        {
+                            "code": "employee_address.id",
+                            "key": "Id",
+                            "type": "NUMBER",
+                            "label": "Id",
+                            "required": true,
+                            "readonly": false,
+                            "width": "[4]"
+                        },
+                        {
+                            "code": "employee_address.employee_id",
+                            "key": "EmployeeId",
+                            "type": "TEXT",
+                            "label": "Employee Id",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 50,
+                            "width": "[4]"
+                        },
+                        {
+                            "code": "employee_address.street",
+                            "key": "Street",
+                            "type": "TEXT",
+                            "label": "Street",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 255,
+                            "width": "[12]"
+                        },
+                        {
+                            "code": "employee_address.city",
+                            "key": "City",
+                            "type": "TEXT",
+                            "label": "City",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 100,
+                            "width": "[6]"
+                        },
+                        {
+                            "code": "employee_address.country_code",
+                            "key": "CountryCode",
+                            "type": "TEXT",
+                            "label": "Country Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 10,
+                            "width": "[4]"
+                        },
+                        {
+                            "code": "employee_address.state_code",
+                            "key": "StateCode",
+                            "type": "TEXT",
+                            "label": "State Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 10,
+                            "width": "[4]"
+                        }
+                    ]
+                },
+                {
+                    "code": "employee_dependents_section",
+                    "key": "dependents",
+                    "type": "GROUP",
+                    "label": "Dependents",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[12]",
+                    "controls": [
+                        {
+                            "code": "employee_dependent.table",
+                            "key": "EmployeeDependent",
+                            "type": "TABLE",
+                            "label": "Employee Dependent",
+                            "required": false,
+                            "readonly": false,
+                            "width": "[12]",
+                            "controls": [
+                                {
+                                    "code": "employee_dependent.id",
+                                    "key": "Id",
+                                    "type": "NUMBER",
+                                    "label": "Id",
+                                    "required": true,
+                                    "readonly": false,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.employee_id",
+                                    "key": "EmployeeId",
+                                    "type": "TEXT",
+                                    "label": "Employee Id",
+                                    "required": true,
+                                    "readonly": false,
+                                    "minLength": 2,
+                                    "maxLength": 50,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.dep_id",
+                                    "key": "DepId",
+                                    "type": "TEXT",
+                                    "label": "Dep Id",
+                                    "required": true,
+                                    "readonly": false,
+                                    "minLength": 2,
+                                    "maxLength": 50,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.first_name",
+                                    "key": "FirstName",
+                                    "type": "TEXT",
+                                    "label": "First Name",
+                                    "required": true,
+                                    "readonly": false,
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "width": "[6]"
+                                },
+                                {
+                                    "code": "employee_dependent.last_name",
+                                    "key": "LastName",
+                                    "type": "TEXT",
+                                    "label": "Last Name",
+                                    "required": true,
+                                    "readonly": false,
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "width": "[6]"
+                                },
+                                {
+                                    "code": "employee_dependent.relation",
+                                    "key": "Relation",
+                                    "type": "TEXT",
+                                    "label": "Relation",
+                                    "required": false,
+                                    "readonly": false,
+                                    "maxLength": 50,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.age",
+                                    "key": "Age",
+                                    "type": "NUMBER",
+                                    "label": "Age",
+                                    "required": false,
+                                    "readonly": false,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.guid",
+                                    "key": "Guid",
+                                    "type": "TEXT",
+                                    "label": "Guid",
+                                    "required": false,
+                                    "readonly": false,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.sys_start_time",
+                                    "key": "SysStartTime",
+                                    "type": "DATE",
+                                    "label": "Sys Start Time",
+                                    "required": true,
+                                    "readonly": false,
+                                    "width": "[4]"
+                                },
+                                {
+                                    "code": "employee_dependent.sys_end_time",
+                                    "key": "SysEndTime",
+                                    "type": "DATE",
+                                    "label": "Sys End Time",
+                                    "required": true,
+                                    "readonly": false,
+                                    "width": "[4]"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "code": "employee.last_name",
+                    "key": "LastName",
+                    "type": "TEXT",
+                    "label": "Last Name",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 100,
+                    "width": "[6]"
+                },
+                {
+                    "code": "employee.nick_name",
+                    "key": "NickName",
+                    "type": "TEXT",
+                    "label": "Nick Name",
+                    "required": false,
+                    "readonly": false,
+                    "maxLength": 100,
+                    "width": "[6]"
+                },
+                {
+                    "code": "employee.email",
+                    "key": "Email",
+                    "type": "TEXT",
+                    "label": "Email",
+                    "required": true,
+                    "readonly": false,
+                    "minLength": 2,
+                    "maxLength": 255,
+                    "width": "[12]"
+                },
+                {
+                    "code": "employee.date_of_birth",
+                    "key": "DateOfBirth",
+                    "type": "DATE",
+                    "label": "Date Of Birth",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[4]"
+                },
+                {
+                    "code": "employee.is_married",
+                    "key": "IsMarried",
+                    "type": "CHECKBOX",
+                    "label": "Is Married",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[4]"
+                },
+                {
+                    "code": "employee.age",
+                    "key": "Age",
+                    "type": "NUMBER",
+                    "label": "Age",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[4]"
+                },
+                {
+                    "code": "employee.about",
+                    "key": "About",
+                    "type": "TEXT",
+                    "label": "About",
+                    "required": false,
+                    "readonly": false,
+                    "maxLength": -1,
+                    "width": "[12]"
+                },
+                {
+                    "code": "employee.nationality",
+                    "key": "Nationality",
+                    "type": "TEXT",
+                    "label": "Nationality",
+                    "required": false,
+                    "readonly": false,
+                    "maxLength": 10,
+                    "width": "[4]"
+                },
+                {
+                    "code": "employee.has_nick_name",
+                    "key": "HasNickName",
+                    "type": "CHECKBOX",
+                    "label": "Has Nick Name",
+                    "required": false,
+                    "readonly": false,
+                    "width": "[4]"
+                }
+            ]
+        }
+    ]
+}

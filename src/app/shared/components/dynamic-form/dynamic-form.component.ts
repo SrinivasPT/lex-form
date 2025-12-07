@@ -4,12 +4,12 @@ import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { FormSchema } from '../../../core/models/form-schema.interface';
 import { SchemaResolverService } from '../../../core/services/schema-resolver.service';
 import { FormGeneratorService } from '../../../core/services/form-generator.service';
-import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.component';
+import { DynamicControlComponent } from '../dynamic-control/dynamic-control.component';
 
 @Component({
     selector: 'app-dynamic-form',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, DynamicSectionComponent],
+    imports: [CommonModule, ReactiveFormsModule, DynamicControlComponent],
     template: `
         @if (form()) {
         <div class="dynamic-form-container">
@@ -17,9 +17,10 @@ import { DynamicSectionComponent } from '../dynamic-section/dynamic-section.comp
 
             <form [formGroup]="form()!" (ngSubmit)="onSubmit()">
                 <div class="sections-wrapper">
-                    @for (section of resolvedSchema()?.sections; track section.label || $index) {
-                    <app-dynamic-section [config]="section" [parentForm]="form()!">
-                    </app-dynamic-section>
+                    @for (section of resolvedSchema()?.sections; track section.key || $index) {
+                    <!-- Sections are just controls, treat them uniformly -->
+                    <app-dynamic-control [config]="section" [group]="form()!">
+                    </app-dynamic-control>
                     }
                 </div>
 
