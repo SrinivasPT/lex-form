@@ -20,12 +20,10 @@ import {
                 <legend>{{ config.label }}</legend>
                 }
 
-                <ng-container [formGroup]="currentGroup">
-                    @for (control of resolvedControls; track control.key) {
-                    <app-dynamic-control [config]="control" [group]="currentGroup">
-                    </app-dynamic-control>
-                    }
-                </ng-container>
+                <!-- Pass root form to all controls for dataPath resolution -->
+                @for (control of resolvedControls; track control.key) {
+                <app-dynamic-control [config]="control" [group]="parentForm"> </app-dynamic-control>
+                }
             </fieldset>
         </div>
     `,
@@ -67,9 +65,6 @@ export class DynamicSectionComponent implements OnInit {
     @Input({ required: true }) config!: FormSection;
     @Input({ required: true }) parentForm!: FormGroup;
 
-    // This is the group that the children will bind to
-    currentGroup!: FormGroup;
-
     // Getter to cast controls to ControlDefinition[] (they are already resolved)
     get resolvedControls(): ControlDefinition[] {
         return this.config.controls as ControlDefinition[];
@@ -97,18 +92,7 @@ export class DynamicSectionComponent implements OnInit {
     }
 
     ngOnInit() {
-        if (this.config.key) {
-            // SCENARIO A: Nested Data Scope (e.g. 'address')
-            const nested = this.parentForm.get(this.config.key);
-            if (!nested) {
-                throw new Error(
-                    `[DynamicSection] Could not find nested group for key: ${this.config.key}`
-                );
-            }
-            this.currentGroup = nested as FormGroup;
-        } else {
-            // SCENARIO B: Visual Layout Only (controls bind to parent)
-            this.currentGroup = this.parentForm;
-        }
+        // Section configuration is handled at render time
+        // Form structure is now based on data paths, not section keys
     }
 }

@@ -46,15 +46,15 @@ export class SchemaResolverService {
             const merged = { ...libraryDef, ...config };
 
             // Special handling: If type is table, we still need to recurse
-            if (merged.type === 'table' && merged.rowConfig) {
-                merged.rowConfig = merged.rowConfig.map((c) => this.resolveControl(c));
+            if (merged.type === 'table' && merged.controls) {
+                merged.controls = merged.controls.map((c) => this.resolveControl(c));
             }
             return merged;
         }
 
         // It's a purely custom control not in the library
-        if (config.type === 'table' && config.rowConfig) {
-            config.rowConfig = config.rowConfig.map((c) => this.resolveControl(c));
+        if (config.type === 'table' && config.controls) {
+            config.controls = config.controls.map((c) => this.resolveControl(c));
         }
 
         return config;

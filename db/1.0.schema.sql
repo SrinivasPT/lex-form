@@ -16,31 +16,13 @@
 
 USE lex_form_db
 GO
--- =============================================
--- 1. DROP SCRIPT: Clean up tables
--- =============================================
-
--- Disable system versioning and drop tables in reverse dependency order
-
--- Drop control_group table (has foreign keys to form and itself)
-ALTER TABLE dbo.control_group SET (SYSTEM_VERSIONING = OFF);
-DROP TABLE IF EXISTS dbo.control_group_history;
-DROP TABLE IF EXISTS dbo.control_group;
-
--- Drop control table (has foreign keys to form and itself)
-ALTER TABLE dbo.control SET (SYSTEM_VERSIONING = OFF);
-DROP TABLE IF EXISTS dbo.control_history;
-DROP TABLE IF EXISTS dbo.control;
-
--- Drop form table
-ALTER TABLE dbo.form SET (SYSTEM_VERSIONING = OFF);
-DROP TABLE IF EXISTS dbo.form_history;
-DROP TABLE IF EXISTS dbo.form;
-
--- Drop domain_data table
-ALTER TABLE dbo.domain_data SET (SYSTEM_VERSIONING = OFF);
-DROP TABLE IF EXISTS dbo.domain_data_history;
-DROP TABLE IF EXISTS dbo.domain_data;
+-- Use utility stored procedures to safely remove temporal tables (reverse dependency order)
+PRINT '-- Cleanup: dropping schema using util stored procedures';
+EXEC dbo.sp_safe_drop_table 'dbo', 'control_group';
+EXEC dbo.sp_safe_drop_table 'dbo', 'control';
+EXEC dbo.sp_safe_drop_table 'dbo', 'form';
+EXEC dbo.sp_safe_drop_table 'dbo', 'domain_data';
+GO
 
 -- =============================================
 -- 2. DOMAIN DATA (Master Data / Lookups)
@@ -104,8 +86,9 @@ CREATE TABLE dbo.control (
     sort_order INT NOT NULL DEFAULT 0,
 
     -- Layout (Responsive Grid)
-    -- Storing as JSON is cleaner than columns: { "xs": 12, "md": 6 }
-    layout_config NVARCHAR(MAX), 
+    -- Storing as JSON is cleaner than columns:  [12, 6, 4] for Mobile, Tablet, Desktop
+    width NVARCHAR(MAX), 
+    layout_config NVARCHAR(MAX), -- JSON for complex layouts (e.g., Table columns, Group layouts)
 
     -- Data Binding Source (For auto-generation/validation)
     source_table VARCHAR(128),
@@ -158,6 +141,8 @@ WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.control_history));
 CREATE TABLE dbo.control_group (
     control_code VARCHAR(128) NOT NULL,        -- The control that has the relationship
     child_control_code VARCHAR(128) NOT NULL, -- The control it relates to
+    data_path VARCHAR(255) NULL,
+    width NVARCHAR(MAX), -- Storing as JSON is cleaner than columns:  [12, 6, 4] for Mobile, Tablet, Desktop
     sort_order INT DEFAULT 0,
 
     -- System Versioning
@@ -173,14 +158,23 @@ CREATE TABLE dbo.control_group (
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.control_group_history));
 
 -- Hierarchy Traversal Performance
-CREATE INDEX idx_control_form_code ON dbo.control(form_code);
-CREATE INDEX idx_control_parent_code ON dbo.control(parent_control_code);
+EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_form_code';
+EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_parent_code';
+EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_sort_order';
+EXEC dbo.sp_drop_index_if_exists 'dbo', 'domain_data', 'idx_domain_category';
 
--- Ordering
-CREATE INDEX idx_control_sort_order ON dbo.control(sort_order);
+IF OBJECT_ID('dbo.control', 'U') IS NOT NULL
+BEGIN
+    CREATE INDEX idx_control_form_code ON dbo.control(form_code);
+    CREATE INDEX idx_control_parent_code ON dbo.control(parent_control_code);
+    CREATE INDEX idx_control_sort_order ON dbo.control(sort_order);
+END
 
 -- Domain Lookups
-CREATE INDEX idx_domain_category ON dbo.domain_data(category_code);
+IF OBJECT_ID('dbo.domain_data', 'U') IS NOT NULL
+BEGIN
+    CREATE INDEX idx_domain_category ON dbo.domain_data(category_code);
+END
 
 -- =============================================
 -- 6. SAMPLE QUERY: How to retrieve the Tree

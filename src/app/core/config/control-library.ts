@@ -37,9 +37,7 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         key: 'street',
         type: 'text',
         label: 'Street Address',
-        domainConfig: {
-            categoryCode: 'COUNTRY',
-        },
+        categoryCode: 'COUNTRY',
     },
 
     'address.city': {
@@ -53,9 +51,7 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         key: 'countryCode',
         type: 'select',
         label: 'Country',
-        domainConfig: {
-            categoryCode: 'country',
-        },
+        categoryCode: 'country',
     },
 
     // 4. Dependent Select (State)
@@ -63,10 +59,8 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         key: 'stateCode',
         type: 'select',
         label: 'State/Province',
-        domainConfig: {
-            categoryCode: 'state',
-            dependentOn: 'countryCode', // References the key of the parent
-        },
+        categoryCode: 'state',
+        dependentOn: 'countryCode', // References the key of the parent
         // Standard logic: Disable until country is picked
         disabledWhen: 'model.countryCode == null',
     },

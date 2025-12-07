@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DynamicFormComponent } from './shared/components/dynamic-form/dynamic-form.component';
 import { FormSchema } from './core/models/form-schema.interface';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -32,14 +32,28 @@ export class AppComponent implements OnInit {
 
     // 2. Mock Initial Data (Optional)
     initialValues = {
+        id: 'EMP_001',
         firstName: 'John',
+        lastName: 'Doe',
+        nickName: 'Johnny',
+        email: 'john.doe@example.com',
+        dateOfBirth: '1985-06-15',
+        isMarried: true,
+        age: 38,
+        about: 'A brief bio about John Doe.',
+        nationality: 'IN',
         hasNickName: false,
-        address: {
-            city: 'Hyderabad',
-        },
+        address: [
+            {
+                street: '123 Main St',
+                city: 'Hyderabad',
+                countryCode: 'IN',
+                stateCode: 'TG',
+            },
+        ],
         dependents: [
-            { name: 'Jane', relation: 'spouse', age: 30 },
-            { name: 'Jimmy', relation: 'child', age: 5 },
+            { id: 'RP_1', firstName: 'Jane', lastName: 'Doe', relation: 'spouse', age: 30 },
+            { id: 'RP_2', firstName: 'Jimmy', lastName: 'Doe', relation: 'child', age: 5 },
         ],
     };
 

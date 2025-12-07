@@ -19,13 +19,28 @@ export interface ResponsiveWidth {
 
 /**
  * Parses width configuration and returns responsive width values
- * @param width - Single number or array [mobile, tablet, desktop]
+ * @param width - Single number, array [mobile, tablet, desktop], or string like "[12]"
  * @returns ResponsiveWidth object with values for each breakpoint
  */
-export function parseResponsiveWidth(width?: number | number[]): ResponsiveWidth {
+export function parseResponsiveWidth(width?: number | number[] | string): ResponsiveWidth {
     // Default to full width (12 columns) if not specified
     if (width === undefined || width === null) {
         return { mobile: 12, tablet: 12, desktop: 12 };
+    }
+
+    // Handle string notation like "[12]" or "[12, 6, 4]"
+    if (typeof width === 'string') {
+        try {
+            const parsed = JSON.parse(width);
+            if (Array.isArray(parsed)) {
+                return parseResponsiveWidth(parsed);
+            } else if (typeof parsed === 'number') {
+                return parseResponsiveWidth(parsed);
+            }
+        } catch {
+            // If parsing fails, return default
+            return { mobile: 12, tablet: 12, desktop: 12 };
+        }
     }
 
     // Single value - apply to all breakpoints
@@ -61,10 +76,10 @@ export function parseResponsiveWidth(width?: number | number[]): ResponsiveWidth
 
 /**
  * Generates CSS class names for responsive width based on 12-point grid
- * @param width - Single number or array [mobile, tablet, desktop]
+ * @param width - Single number, array [mobile, tablet, desktop], or string like "[12]"
  * @returns String of CSS classes for responsive grid
  */
-export function getResponsiveWidthClasses(width?: number | number[]): string {
+export function getResponsiveWidthClasses(width?: number | number[] | string): string {
     const responsive = parseResponsiveWidth(width);
 
     return `col-xs-${responsive.mobile} col-md-${responsive.tablet} col-lg-${responsive.desktop}`;
@@ -74,10 +89,12 @@ export function getResponsiveWidthClasses(width?: number | number[]): string {
  * Generates inline style object for responsive width
  * Can be used with ngStyle directive
  * Note: Widths are calculated to work within a flex container with 16px gap
- * @param width - Single number or array [mobile, tablet, desktop]
+ * @param width - Single number, array [mobile, tablet, desktop], or string like "[12]"
  * @returns Object with CSS custom properties for width
  */
-export function getResponsiveWidthStyle(width?: number | number[]): Record<string, string> {
+export function getResponsiveWidthStyle(
+    width?: number | number[] | string
+): Record<string, string> {
     const responsive = parseResponsiveWidth(width);
 
     // Calculate width accounting for flex gap (16px)
@@ -99,7 +116,7 @@ export function getResponsiveWidthStyle(width?: number | number[]): Record<strin
     };
 }
 
-export function getResponsiveGridVars(width?: number | number[]): Record<string, string> {
+export function getResponsiveGridVars(width?: number | number[] | string): Record<string, string> {
     const responsive = parseResponsiveWidth(width);
     return {
         '--col-span-xs': String(responsive.mobile),

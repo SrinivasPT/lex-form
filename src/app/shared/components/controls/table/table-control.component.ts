@@ -66,7 +66,7 @@ export interface FormActionEvent {
                     <thead>
                         <tr>
                             <th
-                                *ngFor="let col of config.rowConfig"
+                                *ngFor="let col of config.controls"
                                 (click)="sortBy(asControlDef(col).key)"
                                 [class.sortable]="config.sortable"
                             >
@@ -86,7 +86,7 @@ export interface FormActionEvent {
                     <tbody>
                         <tr *ngFor="let rowWrapper of viewRows(); trackBy: trackByFn">
                             <td
-                                *ngFor="let col of config.rowConfig"
+                                *ngFor="let col of config.controls"
                                 [attr.data-label]="asControlDef(col).label"
                             >
                                 <ng-container [ngSwitch]="asControlDef(col).type">
@@ -320,7 +320,7 @@ export class TableControlComponent implements OnInit {
     }
 
     get totalCols() {
-        return (this.config.rowConfig?.length || 0) + (this.config.rowActions ? 1 : 0);
+        return (this.config.controls?.length || 0) + (this.config.rowActions ? 1 : 0);
     }
 
     pageSize = computed(() => this.config.pagination?.pageSize || 10);
@@ -471,7 +471,7 @@ export class TableControlComponent implements OnInit {
 
     // Internal helper to create a new row form group based on columns
     private createNewRowGroup(): FormGroup {
-        return this.formGen.createRowGroup(this.config.rowConfig as any[]);
+        return this.formGen.createRowGroup(this.config.controls as any[]);
     }
 
     asControlDef(col: any): any {

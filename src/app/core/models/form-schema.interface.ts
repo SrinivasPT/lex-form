@@ -1,4 +1,18 @@
-export type ControlType = 'text' | 'number' | 'checkbox' | 'select' | 'date' | 'table' | 'group';
+export type ControlType =
+    | 'text'
+    | 'number'
+    | 'checkbox'
+    | 'select'
+    | 'date'
+    | 'table'
+    | 'group'
+    | 'TEXT'
+    | 'NUMBER'
+    | 'CHECKBOX'
+    | 'SELECT'
+    | 'DATE'
+    | 'TABLE'
+    | 'GROUP';
 
 // 1. The Schema Contract
 export interface FormSchema {
@@ -9,9 +23,13 @@ export interface FormSchema {
 }
 
 export interface FormSection {
+    code?: string;
     label?: string;
     key?: string; // Creates a Nested Data Scope if present
-    width?: number | number[]; // 12-point grid scale. Single value or [Mobile, Tablet, Desktop] e.g., 6 or [12, 6, 4]
+    type?: ControlType; // Sections can be explicit group controls
+    width?: number | number[] | string; // 12-point grid scale or string like "[12]"
+    required?: boolean;
+    readonly?: boolean;
     controls: ControlConfig[];
 }
 
@@ -50,13 +68,16 @@ export interface ControlDefinition {
     label?: string;
     placeholder?: string;
     hidden?: boolean;
-    width?: number | number[]; // 12-point grid scale. Single value or [Mobile, Tablet, Desktop] e.g., 6 or [12, 6, 4]
+    width?: number | number[] | string; // 12-point grid scale, array, or string like "[12]"
+
+    // Data Path Override - if specified, control data lives at this path regardless of section placement
+    dataPath?: string;
 
     // Static Options (Simple Lists)
     options?: { label: string; value: any }[];
 
     // Domain / Data Source
-    categoryCode: string;
+    categoryCode?: string;
     dependentOn?: string;
 
     // Logic Expressions (Safe Strings)
@@ -64,11 +85,17 @@ export interface ControlDefinition {
     disabledWhen?: string;
     requiredWhen?: string;
 
-    // Validation
+    // Validation (both old and new style)
     validators?: Record<string, any>; // { required: true, min: 10 }
+    required?: boolean;
+    readonly?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
 
     // Recursion (For Tables/Groups)
-    rowConfig?: ControlConfig[];
+    controls?: ControlConfig[];
 }
 
 export interface ActionDefinition {

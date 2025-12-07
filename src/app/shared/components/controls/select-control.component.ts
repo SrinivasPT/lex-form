@@ -95,8 +95,8 @@ export class SelectControlComponent implements OnInit {
         }
 
         // 2. Dynamic Options
-        if (this.config.domainConfig) {
-            const { categoryCode, dependentOn } = this.config.domainConfig;
+        if (this.config.categoryCode) {
+            const { categoryCode, dependentOn } = this.config;
 
             if (dependentOn) {
                 const parentControl = this.group.get(dependentOn);
