@@ -20,7 +20,7 @@ BEGIN
         END
         ELSE
         BEGIN
-            IF @i = 1 OR @capitalizeNext = 1
+            IF @capitalizeNext = 1
                 SET @result = @result + UPPER(@char)
             ELSE
                 SET @result = @result + LOWER(@char)
@@ -28,6 +28,9 @@ BEGIN
         END
         SET @i = @i + 1
     END
+    -- Convert first character to lowercase for camelCase
+    IF LEN(@result) > 0
+        SET @result = LOWER(SUBSTRING(@result, 1, 1)) + SUBSTRING(@result, 2, LEN(@result) - 1)
     RETURN @result
 END
 GO

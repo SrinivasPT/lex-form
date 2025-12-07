@@ -93,4 +93,6 @@ VALUES ('employee_section', 'employee_address_section', 2);
 INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
 VALUES ('employee_section', 'employee_dependents_section', 3);
 
+UPDATE dbo.control SET dependent_on = 'countryCode' WHERE code = 'employee_address.state_code';
+
 GO

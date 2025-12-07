@@ -23,9 +23,9 @@ export class DomainData {
             return this.cache.get(cacheKey)!;
         }
 
-        let url = `http://localhost:3000/${categoryCode}`;
+        let url = `http://localhost:3001/domain/${categoryCode}`;
         if (parentValue) {
-            url += `?country=${parentValue}`;
+            url += `?parentCode=${parentValue}`;
         }
 
         const request$ = this.http.get<DomainValue[]>(url).pipe(shareReplay(1));
