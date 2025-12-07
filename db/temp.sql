@@ -1,9 +1,45 @@
-SELECT * FROM dbo.control WHERE type = 'SELECT';
-SELECT * FROM dbo.form WHERE code = 'EMPLOYEE_FORM';
-UPDATE dbo.control SET dependent_on = 'countryCode' WHERE code = 'employee_address.state_code';
+-- Query to get control hierarchy starting from employee_section
+DECLARE @rootControl VARCHAR(128) = 'employee_section';
 
-SELECT code, display_text AS displayText, parent_code AS parentCode, extension_json AS extension FROM dbo.domain_data WHERE category_code = 'COUNTRY_CODE'
-    AND is_active = 1 ORDER BY sort_order FOR JSON PATH
+WITH ControlHierarchy AS (
+    -- Start with the root control
+    SELECT
+        c.code,
+        COALESCE(c.label, c.[key], c.code) AS displayText,
+        c.type,
+        c.[key],
+        c.sort_order,
+        CAST(NULL AS VARCHAR(128)) AS parentCode,
+        0 AS level,
+        CAST(c.code AS VARCHAR(MAX)) AS path
+    FROM dbo.control c
+    WHERE c.code = @rootControl
 
-SELECT code, display_text AS displayText, parent_code AS parentCode, extension_json AS extension FROM dbo.domain_data WHERE category_code = 'STATE_CODE'
-    AND is_active = 1 ORDER BY sort_order FOR JSON PATH    
+    UNION ALL
+
+    -- Child controls with their parents (from control_group)
+    SELECT
+        c.code,
+        COALESCE(c.label, c.[key], c.code) AS displayText,
+        c.type,
+        c.[key],
+        c.sort_order,
+        cg.control_code AS parentCode,
+        ch.level + 1 AS level,
+        CAST(ch.path + '/' + c.code AS VARCHAR(MAX)) AS path
+    FROM dbo.control c
+    INNER JOIN dbo.control_group cg ON c.code = cg.child_control_code
+    INNER JOIN ControlHierarchy ch ON cg.control_code = ch.code
+)
+SELECT
+    code,
+    displayText,
+    type,
+    [key],
+    parentCode,
+    level,
+    path,
+    sort_order
+FROM ControlHierarchy
+ORDER BY path, sort_order
+FOR JSON PATH;

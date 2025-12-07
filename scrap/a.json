@@ -1,8 +1,311 @@
 [
-    { "code": "BC", "displayText": "British Columbia", "parentCode": "CA", "extension": "{}" },
-    { "code": "CA", "displayText": "California", "parentCode": "US", "extension": "{}" },
-    { "code": "NY", "displayText": "New York", "parentCode": "US", "extension": "{}" },
-    { "code": "ON", "displayText": "Ontario", "parentCode": "CA", "extension": "{}" },
-    { "code": "QC", "displayText": "Quebec", "parentCode": "CA", "extension": "{}" },
-    { "code": "TX", "displayText": "Texas", "parentCode": "US", "extension": "{}" }
+    {
+        "code": "employee_section",
+        "displayText": "Employee Information",
+        "type": "GROUP",
+        "key": "employee",
+        "level": 0,
+        "path": "employee_section",
+        "sort_order": 1
+    },
+    {
+        "code": "employee.about",
+        "displayText": "About",
+        "type": "TEXT",
+        "key": "about",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.about",
+        "sort_order": 9
+    },
+    {
+        "code": "employee.age",
+        "displayText": "Age",
+        "type": "NUMBER",
+        "key": "age",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.age",
+        "sort_order": 8
+    },
+    {
+        "code": "employee.date_of_birth",
+        "displayText": "Date Of Birth",
+        "type": "DATE",
+        "key": "dateOfBirth",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.date_of_birth",
+        "sort_order": 6
+    },
+    {
+        "code": "employee.email",
+        "displayText": "Email",
+        "type": "TEXT",
+        "key": "email",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.email",
+        "sort_order": 5
+    },
+    {
+        "code": "employee.first_name",
+        "displayText": "First Name",
+        "type": "TEXT",
+        "key": "firstName",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.first_name",
+        "sort_order": 2
+    },
+    {
+        "code": "employee.has_nick_name",
+        "displayText": "Has Nick Name",
+        "type": "CHECKBOX",
+        "key": "hasNickName",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.has_nick_name",
+        "sort_order": 11
+    },
+    {
+        "code": "employee.id",
+        "displayText": "Id",
+        "type": "TEXT",
+        "key": "id",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.id",
+        "sort_order": 1
+    },
+    {
+        "code": "employee.is_married",
+        "displayText": "Is Married",
+        "type": "CHECKBOX",
+        "key": "isMarried",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.is_married",
+        "sort_order": 7
+    },
+    {
+        "code": "employee.last_name",
+        "displayText": "Last Name",
+        "type": "TEXT",
+        "key": "lastName",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.last_name",
+        "sort_order": 3
+    },
+    {
+        "code": "employee.nationality",
+        "displayText": "Nationality",
+        "type": "TEXT",
+        "key": "nationality",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.nationality",
+        "sort_order": 10
+    },
+    {
+        "code": "employee.nick_name",
+        "displayText": "Nick Name",
+        "type": "TEXT",
+        "key": "nickName",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee.nick_name",
+        "sort_order": 4
+    },
+    {
+        "code": "employee_address_section",
+        "displayText": "Address Information",
+        "type": "GROUP",
+        "key": "address",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee_address_section",
+        "sort_order": 2
+    },
+    {
+        "code": "employee_address.city",
+        "displayText": "City",
+        "type": "TEXT",
+        "key": "city",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.city",
+        "sort_order": 4
+    },
+    {
+        "code": "employee_address.country_code",
+        "displayText": "Country Code",
+        "type": "SELECT",
+        "key": "countryCode",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.country_code",
+        "sort_order": 5
+    },
+    {
+        "code": "employee_address.employee_id",
+        "displayText": "Employee Id",
+        "type": "TEXT",
+        "key": "employeeId",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.employee_id",
+        "sort_order": 2
+    },
+    {
+        "code": "employee_address.id",
+        "displayText": "Id",
+        "type": "NUMBER",
+        "key": "id",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.id",
+        "sort_order": 1
+    },
+    {
+        "code": "employee_address.state_code",
+        "displayText": "State Code",
+        "type": "SELECT",
+        "key": "stateCode",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.state_code",
+        "sort_order": 6
+    },
+    {
+        "code": "employee_address.street",
+        "displayText": "Street",
+        "type": "TEXT",
+        "key": "street",
+        "parentCode": "employee_address_section",
+        "level": 2,
+        "path": "employee_section/employee_address_section/employee_address.street",
+        "sort_order": 3
+    },
+    {
+        "code": "employee_dependents_section",
+        "displayText": "Dependents",
+        "type": "GROUP",
+        "key": "dependents",
+        "parentCode": "employee_section",
+        "level": 1,
+        "path": "employee_section/employee_dependents_section",
+        "sort_order": 3
+    },
+    {
+        "code": "employee_dependent.table",
+        "displayText": "Employee Dependent",
+        "type": "TABLE",
+        "key": "employeeDependent",
+        "parentCode": "employee_dependents_section",
+        "level": 2,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table",
+        "sort_order": 6
+    },
+    {
+        "code": "employee_dependent.age",
+        "displayText": "Age",
+        "type": "NUMBER",
+        "key": "age",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.age",
+        "sort_order": 7
+    },
+    {
+        "code": "employee_dependent.dep_id",
+        "displayText": "Dep Id",
+        "type": "TEXT",
+        "key": "depId",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.dep_id",
+        "sort_order": 3
+    },
+    {
+        "code": "employee_dependent.employee_id",
+        "displayText": "Employee Id",
+        "type": "TEXT",
+        "key": "employeeId",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.employee_id",
+        "sort_order": 2
+    },
+    {
+        "code": "employee_dependent.first_name",
+        "displayText": "First Name",
+        "type": "TEXT",
+        "key": "firstName",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.first_name",
+        "sort_order": 4
+    },
+    {
+        "code": "employee_dependent.guid",
+        "displayText": "Guid",
+        "type": "TEXT",
+        "key": "guid",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.guid",
+        "sort_order": 8
+    },
+    {
+        "code": "employee_dependent.id",
+        "displayText": "Id",
+        "type": "NUMBER",
+        "key": "id",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.id",
+        "sort_order": 1
+    },
+    {
+        "code": "employee_dependent.last_name",
+        "displayText": "Last Name",
+        "type": "TEXT",
+        "key": "lastName",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.last_name",
+        "sort_order": 5
+    },
+    {
+        "code": "employee_dependent.relation",
+        "displayText": "Relation",
+        "type": "TEXT",
+        "key": "relation",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.relation",
+        "sort_order": 6
+    },
+    {
+        "code": "employee_dependent.sys_end_time",
+        "displayText": "Sys End Time",
+        "type": "DATE",
+        "key": "sysEndTime",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.sys_end_time",
+        "sort_order": 10
+    },
+    {
+        "code": "employee_dependent.sys_start_time",
+        "displayText": "Sys Start Time",
+        "type": "DATE",
+        "key": "sysStartTime",
+        "parentCode": "employee_dependent.table",
+        "level": 3,
+        "path": "employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.sys_start_time",
+        "sort_order": 9
+    }
 ]

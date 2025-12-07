@@ -17,6 +17,7 @@ import { InputControlComponent } from '../controls/input-control.component';
 import { SelectControlComponent } from '../controls/select-control.component';
 import { DateControlComponent } from '../controls/date-control.component';
 import { TableControlComponent } from '../controls/table/table-control.component';
+import { TreeControlComponent } from '../controls/tree-control.component';
 
 @Component({
     selector: 'app-dynamic-control',
@@ -100,6 +101,7 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
             date: DateControlComponent,
             select: SelectControlComponent,
             table: TableControlComponent,
+            tree: TreeControlComponent,
         };
         return map[this.normalizedType];
     }

@@ -64,4 +64,26 @@ export const GLOBAL_CONTROL_LIBRARY: Record<string, ControlDefinition> = {
         // Standard logic: Disable until country is picked
         disabledWhen: 'model.countryCode == null',
     },
+
+    // 5. Tree Control (Hierarchical Selection)
+    'employee.department': {
+        key: 'department',
+        type: 'tree',
+        label: 'Department',
+        categoryCode: 'department',
+        validators: { required: true },
+    },
+
+    'organization.division': {
+        key: 'division',
+        type: 'tree',
+        label: 'Division',
+        options: [
+            { label: 'Engineering', value: 'ENG' },
+            { label: 'Frontend', value: 'ENG-FE' },
+            { label: 'Backend', value: 'ENG-BE' },
+            { label: 'Sales', value: 'SALES' },
+            { label: 'Enterprise', value: 'SALES-ENT' },
+        ],
+    },
 };

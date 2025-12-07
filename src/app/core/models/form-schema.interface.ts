@@ -5,6 +5,7 @@ export type ControlType =
     | 'select'
     | 'date'
     | 'table'
+    | 'tree'
     | 'group'
     | 'TEXT'
     | 'NUMBER'
@@ -12,6 +13,7 @@ export type ControlType =
     | 'SELECT'
     | 'DATE'
     | 'TABLE'
+    | 'TREE'
     | 'GROUP';
 
 // 1. The Schema Contract
