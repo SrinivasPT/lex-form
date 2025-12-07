@@ -107,7 +107,7 @@
                         },
                         {
                             "code": "employee_dependents_section",
-                            "key": "dependents",
+                            "key": "",
                             "type": "GROUP",
                             "label": "Dependents",
                             "required": false,

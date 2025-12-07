@@ -42,7 +42,10 @@ import { TableControlComponent } from '../controls/table/table-control.component
                 <label [for]="config.key">{{ config.label }}</label>
             </div>
             } @case ('table') {
-            <app-table-control [config]="asTableConfig(config)" [parentGroup]="wrapperGroup()!">
+            <app-table-control
+                [config]="asTableConfig(config)"
+                [parentGroup]="getParentGroupForTable()!"
+            >
             </app-table-control>
             } @case ('group') {
             <div class="group-control">
@@ -51,7 +54,10 @@ import { TableControlComponent } from '../controls/table/table-control.component
                     <legend>{{ config.label }}</legend>
                     <div class="group-controls">
                         @for (childControl of getGroupControls(); track childControl.key) {
-                        <app-dynamic-control [config]="childControl" [group]="group">
+                        <app-dynamic-control
+                            [config]="childControl"
+                            [group]="getGroupForChildren()!"
+                        >
                         </app-dynamic-control>
                         }
                     </div>
@@ -59,7 +65,7 @@ import { TableControlComponent } from '../controls/table/table-control.component
                 } @else {
                 <div class="group-controls">
                     @for (childControl of getGroupControls(); track childControl.key) {
-                    <app-dynamic-control [config]="childControl" [group]="group">
+                    <app-dynamic-control [config]="childControl" [group]="getGroupForChildren()!">
                     </app-dynamic-control>
                     }
                 </div>
@@ -151,7 +157,7 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     }
 
     asTableConfig(c: ControlDefinition): any {
-        console.log('asTableConfig called', c);
+        // console.log('asTableConfig called', c);
         return c;
     }
 
@@ -160,6 +166,33 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
             return this.config.controls.filter((c) => typeof c !== 'string') as ControlDefinition[];
         }
         return [];
+    }
+
+    // For group controls, return the child FormGroup to pass to children
+    getGroupForChildren(): FormGroup | null {
+        if (this.normalizedType === 'group') {
+            // If the group has no key, it's a logical grouping without a FormGroup - pass parent
+            if (!this.config.key) {
+                return this.group;
+            }
+            // Otherwise, pass the child FormGroup
+            return this.resolvedControl() as FormGroup;
+        }
+        return this.group;
+    }
+
+    // For table controls, return the parent FormGroup that contains the FormArray
+    getParentGroupForTable(): FormGroup | null {
+        if (this.normalizedType === 'table') {
+            // The resolved control is the FormArray itself
+            // We need to return the group that contains it
+            // For this, we need to get the parent of the FormArray
+            const control = this.resolvedControl();
+            if (control && control.parent) {
+                return control.parent as FormGroup;
+            }
+        }
+        return this.wrapperGroup();
     }
 
     // Host grid variables
@@ -179,21 +212,42 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        // For group controls without a key, skip control resolution - it's just a logical container
+        if (this.normalizedType === 'group' && !this.config.key) {
+            this.resolvedControl.set(this.group); // Set to current group for rendering
+            this.wrapperGroup.set(this.group); // Pass through the parent group
+            console.log(`[DynamicControl] Keyless group - using parent group:`, this.group);
+            return;
+        }
+
         // Resolve the actual control from data path
         const control = this.formGenerator.getControl(this.group, this.config.key);
         this.resolvedControl.set(control);
+
+        console.log(`[DynamicControl] ${this.config.key} (${this.config.type}):`, {
+            control,
+            controlParent: control?.parent,
+            group: this.group,
+            groupValue: this.group.value,
+        });
 
         if (!control) {
             console.warn(`Control not found for key: ${this.config.key}`);
             return;
         }
 
-        // Create a wrapper FormGroup for child components
-        // Child components expect a FormGroup with a control at config.key
-        const wrapper = this.fb.group({
-            [this.config.key]: control,
-        });
-        this.wrapperGroup.set(wrapper);
+        // For child components, we need to pass the parent FormGroup that contains the control
+        // NOT a wrapper, but the actual parent from the form tree
+        const parentGroup = control.parent as FormGroup;
+        if (parentGroup) {
+            this.wrapperGroup.set(parentGroup);
+            console.log(`[DynamicControl] ${this.config.key} using parent group:`, {
+                parentGroup,
+                parentValue: parentGroup.value,
+            });
+        } else {
+            console.warn(`No parent group found for control: ${this.config.key}`);
+        }
 
         // If there is no visibility rule, we are always visible.
         if (!this.config.visibleWhen) {

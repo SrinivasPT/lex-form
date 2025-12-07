@@ -53,10 +53,18 @@ export class FormGeneratorService {
             if (typeof c === 'string') return;
             const control = c as ControlDefinition;
 
-            // Skip controls without key
-            if (!control.key) return;
-
             const normalizedType = this.normalizeType(control.type);
+
+            // For groups without a key, don't create a nested structure - flatten into parent
+            if (normalizedType === 'group' && !control.key && control.controls) {
+                // Flatten: merge children directly into current structure
+                const childStructure = this.buildControls(control.controls, controlMap, parentPath);
+                Object.assign(structure, childStructure);
+                return;
+            }
+
+            // Skip controls without key (except groups which are handled above)
+            if (!control.key) return;
 
             // Calculate data path
             const dataPath = control.dataPath
