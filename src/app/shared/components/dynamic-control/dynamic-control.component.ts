@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, inject, signal, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 import { Subscription, startWith } from 'rxjs';
 
@@ -15,38 +15,23 @@ import {
 import { ExpressionEvaluatorService } from '../../../core/services/expression-evaluator.service';
 import { InputControlComponent } from '../controls/input-control.component';
 import { SelectControlComponent } from '../controls/select-control.component';
+import { DateControlComponent } from '../controls/date-control.component';
 import { TableControlComponent } from '../controls/table/table-control.component';
 
 @Component({
     selector: 'app-dynamic-control',
     standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        InputControlComponent,
-        SelectControlComponent,
-        TableControlComponent,
-    ],
+    imports: [CommonModule, ReactiveFormsModule, NgComponentOutlet],
     template: `
         @if (isVisible()) {
         <div class="control-wrapper responsive-col">
-            @if (resolvedControl()) { @switch (normalizedType) { @case ('text') {
-            <app-input-control [config]="config" [group]="wrapperGroup()!"> </app-input-control>
-            } @case ('number') {
-            <app-input-control [config]="config" [group]="wrapperGroup()!"> </app-input-control>
-            } @case ('select') {
-            <app-select-control [config]="config" [group]="wrapperGroup()!"> </app-select-control>
-            } @case ('checkbox') {
+            @if (resolvedControl()) { @if (isComponentType()) {
+            <ng-container *ngComponentOutlet="getComponent(); inputs: getInputs()"></ng-container>
+            } @else { @switch (normalizedType) { @case ('checkbox') {
             <div [formGroup]="wrapperGroup()!" class="checkbox-control">
                 <input type="checkbox" [id]="config.key" [formControlName]="config.key" />
                 <label [for]="config.key">{{ config.label }}</label>
             </div>
-            } @case ('table') {
-            <app-table-control
-                [config]="asTableConfig(config)"
-                [parentGroup]="getParentGroupForTable()!"
-            >
-            </app-table-control>
             } @case ('group') {
             <div class="group-control">
                 @if (config.label) {
@@ -73,60 +58,13 @@ import { TableControlComponent } from '../controls/table/table-control.component
             </div>
             } @default {
             <div class="unknown-control">Unknown type: {{ config.type }}</div>
-            } } } @else {
+            } } } } @else {
             <div class="error-control">Control not found: {{ config.key }}</div>
             }
         </div>
         }
     `,
-    styles: [
-        `
-            :host {
-                display: contents;
-                /* DEBUG: outline control host */
-                outline: 1px dashed rgba(0, 0, 0, 0.03);
-            }
-
-            .control-wrapper {
-                box-sizing: border-box;
-                width: 100%;
-                /* grid-column handled by .responsive-col */
-            }
-
-            .group-control {
-                width: 100%;
-            }
-
-            .group-fieldset {
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                padding: 10px;
-                margin: 0;
-                background: #fafafa;
-            }
-
-            .group-fieldset legend {
-                font-weight: bold;
-                padding: 0 5px;
-            }
-
-            .group-controls {
-                display: grid;
-                grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: 12px;
-            }
-
-            .unknown-control,
-            .error-control {
-                color: red;
-                font-style: italic;
-                padding: 8px;
-                background: #fff3cd;
-                border: 1px solid #ffc107;
-                border-radius: 4px;
-            }
-        `,
-    ],
+    styleUrls: ['./dynamic-control.component.scss'],
 })
 export class DynamicControlComponent implements OnInit, OnDestroy {
     @Input({ required: true }) config!: ControlDefinition;
@@ -149,6 +87,32 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     // Normalized control type (case-insensitive)
     get normalizedType(): string {
         return this.config.type?.toLowerCase() || 'text';
+    }
+
+    isComponentType(): boolean {
+        return ['text', 'number', 'date', 'select', 'table'].includes(this.normalizedType);
+    }
+
+    getComponent() {
+        const map: Record<string, any> = {
+            text: InputControlComponent,
+            number: InputControlComponent,
+            date: DateControlComponent,
+            select: SelectControlComponent,
+            table: TableControlComponent,
+        };
+        return map[this.normalizedType];
+    }
+
+    getInputs() {
+        if (this.normalizedType === 'table') {
+            return {
+                config: this.asTableConfig(this.config),
+                parentGroup: this.getParentGroupForTable(),
+            };
+        } else {
+            return { config: this.config, group: this.wrapperGroup() };
+        }
     }
 
     // Get responsive width styles for this control

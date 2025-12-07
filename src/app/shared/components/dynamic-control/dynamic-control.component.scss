@@ -1,0 +1,44 @@
+:host {
+    display: contents;
+    /* DEBUG: outline control host */
+    outline: 1px dashed rgba(0, 0, 0, 0.03);
+}
+
+.control-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    /* grid-column handled by .responsive-col */
+}
+
+.group-control {
+    width: 100%;
+}
+
+.group-fieldset {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 0;
+    background: #fafafa;
+}
+
+.group-fieldset legend {
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.group-controls {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.unknown-control,
+.error-control {
+    color: red;
+    font-style: italic;
+    padding: 8px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+}
