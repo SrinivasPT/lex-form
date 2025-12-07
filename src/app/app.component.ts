@@ -59,13 +59,15 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         console.log('AppComponent initialized, fetching schema...');
-        this.schema$ = this.http.get<FormSchema>('http://localhost:3000/schemas/EMP_002').pipe(
-            tap((schema) => console.log('Schema fetched:', schema)),
-            catchError((err) => {
-                console.error('Error fetching schema:', err);
-                this.error.set(err.message || 'Unknown error');
-                return of(null);
-            })
-        );
+        this.schema$ = this.http
+            .get<FormSchema>('http://localhost:3001/schemas/employee_form')
+            .pipe(
+                tap((schema) => console.log('Schema fetched:', schema)),
+                catchError((err) => {
+                    console.error('Error fetching schema:', err);
+                    this.error.set(err.message || 'Unknown error');
+                    return of(null);
+                })
+            );
     }
 }

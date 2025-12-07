@@ -86,7 +86,7 @@
                                 {
                                     "code": "employee_address.country_code",
                                     "key": "CountryCode",
-                                    "type": "TEXT",
+                                    "type": "SELECT",
                                     "label": "Country Code",
                                     "required": false,
                                     "readonly": false,
@@ -96,7 +96,7 @@
                                 {
                                     "code": "employee_address.state_code",
                                     "key": "StateCode",
-                                    "type": "TEXT",
+                                    "type": "SELECT",
                                     "label": "State Code",
                                     "required": false,
                                     "readonly": false,

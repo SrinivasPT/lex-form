@@ -1,29 +1,5 @@
-/*
-    Database: Microsoft SQL Server
-    Context: LexForm Generic Builder
-    Architecture: Recursive Composite Pattern
-        - Form -> Sections -> Controls
-        - Sections and Controls are both represented by the 'control' table
-        - Form will have multiple root-level controls (Sections)
-        - Sections can have nested controls (Groups, Tables, Inputs)
-
-    Naming Conventions:
-    - Use snake_case for naming conventions.
-    - Use singular nouns for table names.
-    - Use lowercase for all identifiers.
-    - Prefix foreign key columns with the referenced table name.
-*/
-
 USE lex_form_db
 GO
--- Use utility stored procedures to safely remove temporal tables (reverse dependency order)
-PRINT '-- Cleanup: dropping schema using util stored procedures';
-EXEC dbo.sp_safe_drop_table 'dbo', 'control_group';
-EXEC dbo.sp_safe_drop_table 'dbo', 'control';
-EXEC dbo.sp_safe_drop_table 'dbo', 'form';
-EXEC dbo.sp_safe_drop_table 'dbo', 'domain_data';
-GO
-
 -- =============================================
 -- 2. DOMAIN DATA (Master Data / Lookups)
 -- =============================================
@@ -157,12 +133,6 @@ CREATE TABLE dbo.control_group (
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.control_group_history));
 
--- Hierarchy Traversal Performance
-EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_form_code';
-EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_parent_code';
-EXEC dbo.sp_drop_index_if_exists 'dbo', 'control', 'idx_control_sort_order';
-EXEC dbo.sp_drop_index_if_exists 'dbo', 'domain_data', 'idx_domain_category';
-
 IF OBJECT_ID('dbo.control', 'U') IS NOT NULL
 BEGIN
     CREATE INDEX idx_control_form_code ON dbo.control(form_code);
@@ -175,45 +145,5 @@ IF OBJECT_ID('dbo.domain_data', 'U') IS NOT NULL
 BEGIN
     CREATE INDEX idx_domain_category ON dbo.domain_data(category_code);
 END
-
--- =============================================
--- 6. SAMPLE QUERY: How to retrieve the Tree
--- =============================================
-
-/*
--- RECURSIVE CTE to fetch a Form Schema
-WITH ControlTree AS (
-    -- Anchor: Top Level Controls (usually Sections)
-    SELECT
-        code,
-        parent_control_code,
-        form_code,
-        type,
-        [key],
-        label,
-        sort_order,
-        0 AS Level,
-        CAST(RIGHT('0000' + CAST(sort_order AS VARCHAR(10)), 4) AS VARCHAR(MAX)) AS PathOrder
-    FROM dbo.control
-    WHERE form_code = 'EMP_REG_001' AND parent_control_code IS NULL
-
-    UNION ALL
-
-    -- Recursive: Children
-    SELECT
-        c.code,
-        c.parent_control_code,
-        c.form_code,
-        c.type,
-        c.[key],
-        c.label,
-        c.sort_order,
-        ct.Level + 1,
-        CAST(ct.PathOrder + '/' + RIGHT('0000' + CAST(c.sort_order AS VARCHAR(10)), 4) AS VARCHAR(MAX))
-    FROM dbo.control c
-    INNER JOIN ControlTree ct ON c.parent_control_code = ct.code
-)
-SELECT * FROM ControlTree
-ORDER BY PathOrder;
-*/
+GO
 

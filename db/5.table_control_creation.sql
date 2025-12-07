@@ -1,13 +1,16 @@
-/*
-Create a table control for each of the tables - control, section and form. And then populate the 
+-- Insert control_group relationships using INFORMATION_SCHEMA
+USE lex_form_db
+GO
 
-    table.<table_name> -> code VARCHAR(128) PRIMARY KEY,
-    table_name -> table_name VARCHAR(128) NOT NULL,
-    camelCase for table_name -> [key] VARCHAR(128) NOT NULL,
-    'table' -> type VARCHAR(32),
-    comeup with good name based on table name -> label VARCHAR(255),
-    12 -> width VARCHAR(MAX),
-    1 -> searchable BIT,
-    1 -> sortable BIT,
+INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
+SELECT 
+    t.TABLE_NAME + '.table' AS control_code,
+    t.TABLE_NAME + '.' + c.COLUMN_NAME AS child_control_code,
+    ROW_NUMBER() OVER (PARTITION BY t.TABLE_NAME ORDER BY c.ORDINAL_POSITION) AS sort_order
+FROM INFORMATION_SCHEMA.TABLES t 
+    JOIN INFORMATION_SCHEMA.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME 
+        AND c.TABLE_SCHEMA = 'dbo'
+        AND t.TABLE_NAME NOT LIKE '%history%'
+ORDER BY t.TABLE_NAME, c.ORDINAL_POSITION;
 
-*/
+GO

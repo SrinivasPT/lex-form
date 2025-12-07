@@ -16,9 +16,9 @@
                     "label": "Id",
                     "required": true,
                     "readonly": false,
+                    "width": "[4]",
                     "minLength": 2,
-                    "maxLength": 50,
-                    "width": "[4]"
+                    "maxLength": 50
                 },
                 {
                     "code": "employee.first_name",
@@ -27,9 +27,9 @@
                     "label": "First Name",
                     "required": true,
                     "readonly": false,
+                    "width": "[6]",
                     "minLength": 2,
-                    "maxLength": 100,
-                    "width": "[6]"
+                    "maxLength": 100
                 },
                 {
                     "code": "employee_address_section",
@@ -56,9 +56,9 @@
                             "label": "Employee Id",
                             "required": true,
                             "readonly": false,
+                            "width": "[4]",
                             "minLength": 2,
-                            "maxLength": 50,
-                            "width": "[4]"
+                            "maxLength": 50
                         },
                         {
                             "code": "employee_address.street",
@@ -67,8 +67,8 @@
                             "label": "Street",
                             "required": false,
                             "readonly": false,
-                            "maxLength": 255,
-                            "width": "[12]"
+                            "width": "[12]",
+                            "maxLength": 255
                         },
                         {
                             "code": "employee_address.city",
@@ -77,8 +77,8 @@
                             "label": "City",
                             "required": false,
                             "readonly": false,
-                            "maxLength": 100,
-                            "width": "[6]"
+                            "width": "[6]",
+                            "maxLength": 100
                         },
                         {
                             "code": "employee_address.country_code",
@@ -87,8 +87,8 @@
                             "label": "Country Code",
                             "required": false,
                             "readonly": false,
-                            "maxLength": 10,
-                            "width": "[4]"
+                            "width": "[4]",
+                            "maxLength": 10
                         },
                         {
                             "code": "employee_address.state_code",
@@ -97,8 +97,8 @@
                             "label": "State Code",
                             "required": false,
                             "readonly": false,
-                            "maxLength": 10,
-                            "width": "[4]"
+                            "width": "[4]",
+                            "maxLength": 10
                         }
                     ]
                 },
@@ -118,7 +118,6 @@
                             "label": "Employee Dependent",
                             "required": false,
                             "readonly": false,
-                            "width": "[12]",
                             "controls": [
                                 {
                                     "code": "employee_dependent.id",
@@ -136,9 +135,9 @@
                                     "label": "Employee Id",
                                     "required": true,
                                     "readonly": false,
+                                    "width": "[4]",
                                     "minLength": 2,
-                                    "maxLength": 50,
-                                    "width": "[4]"
+                                    "maxLength": 50
                                 },
                                 {
                                     "code": "employee_dependent.dep_id",
@@ -147,9 +146,9 @@
                                     "label": "Dep Id",
                                     "required": true,
                                     "readonly": false,
+                                    "width": "[4]",
                                     "minLength": 2,
-                                    "maxLength": 50,
-                                    "width": "[4]"
+                                    "maxLength": 50
                                 },
                                 {
                                     "code": "employee_dependent.first_name",
@@ -158,9 +157,9 @@
                                     "label": "First Name",
                                     "required": true,
                                     "readonly": false,
+                                    "width": "[6]",
                                     "minLength": 2,
-                                    "maxLength": 100,
-                                    "width": "[6]"
+                                    "maxLength": 100
                                 },
                                 {
                                     "code": "employee_dependent.last_name",
@@ -169,9 +168,9 @@
                                     "label": "Last Name",
                                     "required": true,
                                     "readonly": false,
+                                    "width": "[6]",
                                     "minLength": 2,
-                                    "maxLength": 100,
-                                    "width": "[6]"
+                                    "maxLength": 100
                                 },
                                 {
                                     "code": "employee_dependent.relation",
@@ -180,8 +179,8 @@
                                     "label": "Relation",
                                     "required": false,
                                     "readonly": false,
-                                    "maxLength": 50,
-                                    "width": "[4]"
+                                    "width": "[4]",
+                                    "maxLength": 50
                                 },
                                 {
                                     "code": "employee_dependent.age",
@@ -230,9 +229,9 @@
                     "label": "Last Name",
                     "required": true,
                     "readonly": false,
+                    "width": "[6]",
                     "minLength": 2,
-                    "maxLength": 100,
-                    "width": "[6]"
+                    "maxLength": 100
                 },
                 {
                     "code": "employee.nick_name",
@@ -241,8 +240,8 @@
                     "label": "Nick Name",
                     "required": false,
                     "readonly": false,
-                    "maxLength": 100,
-                    "width": "[6]"
+                    "width": "[6]",
+                    "maxLength": 100
                 },
                 {
                     "code": "employee.email",
@@ -251,9 +250,9 @@
                     "label": "Email",
                     "required": true,
                     "readonly": false,
+                    "width": "[12]",
                     "minLength": 2,
-                    "maxLength": 255,
-                    "width": "[12]"
+                    "maxLength": 255
                 },
                 {
                     "code": "employee.date_of_birth",
@@ -289,8 +288,8 @@
                     "label": "About",
                     "required": false,
                     "readonly": false,
-                    "maxLength": -1,
-                    "width": "[12]"
+                    "width": "[12]",
+                    "maxLength": -1
                 },
                 {
                     "code": "employee.nationality",
@@ -299,8 +298,8 @@
                     "label": "Nationality",
                     "required": false,
                     "readonly": false,
-                    "maxLength": 10,
-                    "width": "[4]"
+                    "width": "[4]",
+                    "maxLength": 10
                 },
                 {
                     "code": "employee.has_nick_name",

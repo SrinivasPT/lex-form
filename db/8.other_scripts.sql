@@ -1,15 +1,6 @@
-/*
-SELECT * FROM dbo.control_group WHERE control_code IN ('employee_dependent.table', 'employee_dependents_section')
-SELECT * FROM dbo.control_group WHERE control_code = 'address.group'
-SELECT * FROM dbo.control WHERE code LIKE 'employee_address%'
-UPDATE dbo.control SET type = 'SELECT' WHERE code IN ('employee_address.state_code', 'employee_address.country_code')
-SELECT * FROM dbo.control WHERE code = 'employee_dependents_section'
-SELECT * FROM dbo.control WHERE code = 'employee_dependent.table'
-SELECT * FROM dbo.control WHERE code LIKE 'employee%'
-SELECT * FROM dbo.form WHERE code = 'employee_form'
-*/
+USE lex_form_db
+GO
 
--- Create recursive function to get control children
 CREATE OR ALTER FUNCTION dbo.fn_GetControlChildren(@parentCode NVARCHAR(128))
 RETURNS NVARCHAR(MAX)
 AS
@@ -53,28 +44,3 @@ BEGIN
     RETURN @json
 END
 GO
-
--- Recursive CTE to build nested control hierarchy
-GO
-
-SELECT
-    f.code,
-    f.version,
-    f.label,
-    JSON_QUERY((
-        SELECT
-            c.label,
-            c.[key],
-            c.[type],
-            c.width AS width,
-            JSON_QUERY(dbo.fn_GetControlChildren(c.code)) AS controls
-        FROM dbo.control c
-        WHERE c.form_code = f.code
-            AND c.parent_control_code IS NULL
-            AND c.atomic_level_code = 'SECTION'
-        ORDER BY c.sort_order
-        FOR JSON PATH
-    )) AS sections
-FROM dbo.form f
-WHERE f.code = 'employee_form'
-FOR JSON PATH, WITHOUT_ARRAY_WRAPPER

@@ -1,5 +1,7 @@
 -- SQL to get the JSON for the form
 -- This query builds the FormSchema JSON structure from the database tables
+USE lex_form_db
+GO
 
 -- SELECT * FROM dbo.form;
 
