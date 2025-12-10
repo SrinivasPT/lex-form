@@ -1,27 +1,30 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent } from './shared/components/dynamic-form/dynamic-form.component';
-import { FormSchema } from './core/models/form-schema.interface';
+import { DynamicFormComponent } from '../shared/components/dynamic-form/dynamic-form.component';
+import { FormSchema } from '../core/models/form-schema.interface';
 import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({
-    selector: 'app-root',
+    selector: 'app-demo-app',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, DynamicFormComponent],
     template: `
         <div style="padding: 20px; font-family: sans-serif;">
             <h1>Generic Form Builder (MVP)</h1>
-            <nav>
-                <a routerLink="/demo">Demo Control</a>
-            </nav>
             <hr />
-            <router-outlet></router-outlet>
+
+            @if (schema$ | async; as schema) {
+            <app-dynamic-form [schema]="schema" [initialData]="initialValues"> </app-dynamic-form>
+            } @else {
+            <p>Loading schema...</p>
+            @if (error()) {
+            <p style="color: red">Error: {{ error() }}</p>
+            } }
         </div>
     `,
 })
-export class AppComponent implements OnInit {
+export class DemoAppComponent implements OnInit {
     private http = inject(HttpClient);
 
     schema$!: Observable<FormSchema | null>;
@@ -55,7 +58,7 @@ export class AppComponent implements OnInit {
     };
 
     ngOnInit() {
-        console.log('AppComponent initialized, fetching schema...');
+        console.log('DemoAppComponent initialized, fetching schema...');
         this.schema$ = this.http.get<FormSchema>('http://localhost:3001/form/employee_form').pipe(
             tap((schema) => console.log('Schema fetched:', schema)),
             catchError((err) => {
