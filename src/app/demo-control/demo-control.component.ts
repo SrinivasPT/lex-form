@@ -5,8 +5,8 @@ import { TreeControlComponent } from '../shared/components/controls/tree-control
 import { ControlDefinition } from '../core/models/form-schema.interface';
 
 interface TreeOption {
-    label: string;
-    value: any;
+    code: string;
+    displayText: string;
     parentCode?: string;
 }
 
@@ -35,20 +35,20 @@ export class DemoControlComponent implements OnInit {
         type: 'tree',
         label: 'Select from Tree',
         options: [
-            { label: 'Electronics', value: 'electronics' },
-            { label: 'Computers', value: 'computers', parentCode: 'electronics' },
-            { label: 'Laptops', value: 'laptops', parentCode: 'computers' },
-            { label: 'Desktops', value: 'desktops', parentCode: 'computers' },
-            { label: 'Phones', value: 'phones', parentCode: 'electronics' },
-            { label: 'Smartphones', value: 'smartphones', parentCode: 'phones' },
-            { label: 'Feature Phones', value: 'featurephones', parentCode: 'phones' },
-            { label: 'Clothing', value: 'clothing' },
-            { label: 'Men', value: 'men', parentCode: 'clothing' },
-            { label: 'Shirts', value: 'shirts', parentCode: 'men' },
-            { label: 'Pants', value: 'pants', parentCode: 'men' },
-            { label: 'Women', value: 'women', parentCode: 'clothing' },
-            { label: 'Dresses', value: 'dresses', parentCode: 'women' },
-            { label: 'Skirts', value: 'skirts', parentCode: 'women' },
+            { code: 'electronics', displayText: 'Electronics' },
+            { code: 'computers', displayText: 'Computers', parentCode: 'electronics' },
+            { code: 'laptops', displayText: 'Laptops', parentCode: 'computers' },
+            { code: 'desktops', displayText: 'Desktops', parentCode: 'computers' },
+            { code: 'phones', displayText: 'Phones', parentCode: 'electronics' },
+            { code: 'smartphones', displayText: 'Smartphones', parentCode: 'phones' },
+            { code: 'featurephones', displayText: 'Feature Phones', parentCode: 'phones' },
+            { code: 'clothing', displayText: 'Clothing' },
+            { code: 'men', displayText: 'Men', parentCode: 'clothing' },
+            { code: 'shirts', displayText: 'Shirts', parentCode: 'men' },
+            { code: 'pants', displayText: 'Pants', parentCode: 'men' },
+            { code: 'women', displayText: 'Women', parentCode: 'clothing' },
+            { code: 'dresses', displayText: 'Dresses', parentCode: 'women' },
+            { code: 'skirts', displayText: 'Skirts', parentCode: 'women' },
         ] as any,
     };
 

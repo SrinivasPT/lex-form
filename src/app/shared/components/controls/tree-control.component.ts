@@ -373,14 +373,8 @@ export class TreeControlComponent implements OnInit {
     /**
      * Convert static options to tree nodes
      */
-    private convertOptionsToTree(
-        options: { label: string; value: any; parentCode?: string }[]
-    ): TreeNode[] {
-        return options.map((opt) => ({
-            code: String(opt.value),
-            displayText: opt.label,
-            parentCode: opt.parentCode || null,
-        }));
+    private convertOptionsToTree(options: any[]): TreeNode[] {
+        return options as TreeNode[];
     }
 
     /**
