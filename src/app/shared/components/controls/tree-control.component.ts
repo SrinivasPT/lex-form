@@ -1,16 +1,18 @@
 import { Component, Input, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { startWith, switchMap, distinctUntilChanged } from 'rxjs/operators';
+import { startWith, switchMap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { ControlDefinition } from '../../../core/models/form-schema.interface';
 import { DomainData, DomainValue } from '../../../core/services/domain-data.service';
+import { InputControlComponent } from './input-control.component';
 
 /**
  * Tree node structure expected from domain data
@@ -27,7 +29,14 @@ interface TreeNode {
 @Component({
     selector: 'app-tree-control',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatTreeModule, MatIconModule, MatButtonModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatTreeModule,
+        MatIconModule,
+        MatButtonModule,
+        InputControlComponent,
+    ],
     template: `
         <div [formGroup]="group" class="form-field tree-control">
             <label [attr.for]="config.key">
@@ -44,11 +53,19 @@ interface TreeNode {
                     No data available
                 </div>
                 <div *ngIf="dataSource.data.length > 0" class="tree-container">
+                    <app-input-control
+                        [config]="searchConfig"
+                        [group]="searchGroup"
+                    ></app-input-control>
                     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
                         <!-- Tree node template for expandable nodes -->
                         <mat-nested-tree-node
-                            *matTreeNodeDef="let node; when: hasChild"
+                            *matTreeNodeDef="let node; when: hasChild; trackBy: trackByCode"
                             [attr.aria-expanded]="treeControl.isExpanded(node)"
+                            [attr.aria-level]="getNodeLevel(node)"
+                            [attr.aria-setsize]="getNodeSetSize(node)"
+                            [attr.aria-posinset]="getNodePosition(node)"
+                            role="treeitem"
                         >
                             <div class="tree-node-content">
                                 <button
@@ -65,6 +82,7 @@ interface TreeNode {
                                 </button>
                                 <span
                                     class="tree-node-label expandable"
+                                    matTreeNodeToggle
                                     (click)="selectNode(node)"
                                     [class.selected]="isSelected(node)"
                                     [attr.role]="'button'"
@@ -78,13 +96,22 @@ interface TreeNode {
                             <div
                                 class="nested-children"
                                 [style.display]="treeControl.isExpanded(node) ? 'block' : 'none'"
+                                [@expandCollapse]="
+                                    treeControl.isExpanded(node) ? 'expanded' : 'collapsed'
+                                "
                             >
                                 <ng-container matTreeNodeOutlet></ng-container>
                             </div>
                         </mat-nested-tree-node>
 
                         <!-- Tree node template for leaf nodes -->
-                        <mat-tree-node *matTreeNodeDef="let node">
+                        <mat-tree-node
+                            *matTreeNodeDef="let node; trackBy: trackByCode"
+                            [attr.aria-level]="getNodeLevel(node)"
+                            [attr.aria-setsize]="getNodeSetSize(node)"
+                            [attr.aria-posinset]="getNodePosition(node)"
+                            role="treeitem"
+                        >
                             <div class="tree-node-content">
                                 <button mat-icon-button disabled></button>
                                 <span
@@ -130,6 +157,11 @@ interface TreeNode {
                 max-height: 400px;
                 overflow-y: auto;
                 background-color: white;
+            }
+
+            .search-field {
+                width: 100%;
+                margin-bottom: 8px;
             }
 
             .tree-node-content {
@@ -190,6 +222,13 @@ interface TreeNode {
             }
         `,
     ],
+    animations: [
+        trigger('expandCollapse', [
+            state('collapsed', style({ height: '0px', overflow: 'hidden', opacity: 0 })),
+            state('expanded', style({ height: '*', overflow: 'visible', opacity: 1 })),
+            transition('collapsed <=> expanded', animate('300ms ease-in-out')),
+        ]),
+    ],
 })
 export class TreeControlComponent implements OnInit {
     @Input({ required: true }) config!: ControlDefinition;
@@ -200,14 +239,30 @@ export class TreeControlComponent implements OnInit {
 
     protected readonly loading = signal<boolean>(false);
     protected readonly selectedNodeCode = signal<string | null>(null);
+    protected readonly searchControl = new FormControl('');
+    protected readonly searchGroup = new FormGroup({ search: this.searchControl });
+    protected readonly searchConfig: ControlDefinition = {
+        key: 'search',
+        type: 'text',
+        label: 'Search',
+        placeholder: 'Filter nodes...',
+    };
 
     protected readonly dataSource = new MatTreeNestedDataSource<TreeNode>();
     protected readonly treeControl = new NestedTreeControl<TreeNode>((node) => node.children ?? []);
 
     private nodeMap = new Map<string, TreeNode>();
+    private originalData: TreeNode[] = [];
 
     ngOnInit(): void {
         this.initializeSelectedValue();
+
+        // Set up search filtering
+        this.searchControl.valueChanges
+            .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.applyFilter();
+            });
 
         if (this.config.options) {
             this.loadStaticOptions();
@@ -297,8 +352,11 @@ export class TreeControlComponent implements OnInit {
      * Handle successful tree data load
      */
     private handleTreeDataLoaded(data: DomainValue[], parentFilter?: string | null): void {
-        const treeNodes = this.convertDomainToTree(data);
-        this.updateTreeData(treeNodes, parentFilter);
+        let treeNodes = this.convertDomainToTree(data);
+        if (parentFilter !== undefined) {
+            treeNodes = treeNodes.filter((node) => node.parentCode === parentFilter);
+        }
+        this.updateTreeData(treeNodes);
         this.loading.set(false);
     }
 
@@ -314,15 +372,32 @@ export class TreeControlComponent implements OnInit {
      * Update tree data source with new nodes
      */
     private updateTreeData(nodes: TreeNode[], parentFilter?: string | null): void {
-        this.dataSource.data = this.buildTreeStructure(nodes, parentFilter);
+        this.originalData = nodes;
+        this.applyFilter();
+    }
+
+    private applyFilter(): void {
+        const searchTerm = this.searchControl.value?.toLowerCase() || '';
+        let filteredNodes = this.originalData;
+
+        if (searchTerm) {
+            filteredNodes = this.filterTreeNodes(this.originalData, searchTerm);
+        }
+
+        this.dataSource.data = this.buildTreeStructure(filteredNodes);
         this.treeControl.dataNodes = this.dataSource.data;
         this.expandToNode(this.selectedNodeCode());
+
+        // Expand all nodes if searching to show matches
+        if (searchTerm) {
+            this.treeControl.expandAll();
+        }
     }
 
     /**
      * Build hierarchical tree structure from flat list
      */
-    private buildTreeStructure(nodes: TreeNode[], parentFilter?: string | null): TreeNode[] {
+    private buildTreeStructure(nodes: TreeNode[]): TreeNode[] {
         const nodeMap = new Map<string, TreeNode>();
         const rootNodes: TreeNode[] = [];
 
@@ -334,12 +409,9 @@ export class TreeControlComponent implements OnInit {
         // Build hierarchy
         nodes.forEach((node) => {
             const treeNode = nodeMap.get(node.code)!;
-            const isRoot =
-                parentFilter === undefined ? !node.parentCode : node.parentCode === parentFilter;
-
-            if (isRoot) {
+            if (!node.parentCode) {
                 rootNodes.push(treeNode);
-            } else if (node.parentCode) {
+            } else {
                 const parent = nodeMap.get(node.parentCode);
                 if (parent) {
                     parent.children!.push(treeNode);
@@ -349,6 +421,40 @@ export class TreeControlComponent implements OnInit {
 
         this.nodeMap = nodeMap;
         return rootNodes;
+    }
+
+    /**
+     * Filter tree nodes based on search term, keeping ancestors of matches
+     */
+    private filterTreeNodes(nodes: TreeNode[], searchTerm: string): TreeNode[] {
+        const matches = new Set<string>();
+        const ancestors = new Set<string>();
+
+        // Find all matching nodes
+        const findMatches = (nodeList: TreeNode[]) => {
+            nodeList.forEach((node) => {
+                if (node.displayText.toLowerCase().includes(searchTerm)) {
+                    matches.add(node.code);
+                    // Add all ancestors
+                    let parentCode = node.parentCode;
+                    while (parentCode) {
+                        ancestors.add(parentCode);
+                        const parent = this.originalData.find((n) => n.code === parentCode);
+                        parentCode = parent?.parentCode || null;
+                    }
+                }
+                if (node.children) {
+                    findMatches(node.children);
+                }
+            });
+        };
+
+        findMatches(nodes);
+
+        // Return nodes that are matches or ancestors
+        return this.originalData.filter(
+            (node) => matches.has(node.code) || ancestors.has(node.code)
+        );
     }
 
     /**
@@ -420,5 +526,48 @@ export class TreeControlComponent implements OnInit {
     protected get hasError(): boolean {
         const control = this.group.get(this.config.key);
         return (control?.invalid && control?.touched) ?? false;
+    }
+
+    /**
+     * Get the level of a node in the tree
+     */
+    protected getNodeLevel(node: TreeNode): number {
+        let level = 0;
+        let parentCode = node.parentCode;
+        while (parentCode) {
+            level++;
+            const parent = this.nodeMap.get(parentCode);
+            parentCode = parent?.parentCode || null;
+        }
+        return level + 1;
+    }
+
+    /**
+     * Get the set size (number of siblings) for a node
+     */
+    protected getNodeSetSize(node: TreeNode): number {
+        if (!node.parentCode) {
+            return this.dataSource.data.length;
+        }
+        const parent = this.nodeMap.get(node.parentCode);
+        return parent?.children?.length || 1;
+    }
+
+    /**
+     * Get the position of a node among its siblings
+     */
+    protected getNodePosition(node: TreeNode): number {
+        if (!node.parentCode) {
+            return this.dataSource.data.findIndex((n) => n.code === node.code) + 1;
+        }
+        const parent = this.nodeMap.get(node.parentCode);
+        return (parent?.children?.findIndex((n) => n.code === node.code) || 0) + 1;
+    }
+
+    /**
+     * TrackBy function for performance
+     */
+    protected trackByCode(index: number, node: TreeNode): string {
+        return node.code;
     }
 }
