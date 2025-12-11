@@ -1,8 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent } from '../shared/components/dynamic-form/dynamic-form.component';
-import { FormSchema } from '../core/models/form-schema.interface';
+import { DynamicFormComponent, FormSchema } from 'form-lib';
 import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({

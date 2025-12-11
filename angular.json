@@ -73,6 +73,32 @@
           "builder": "@angular/build:unit-test"
         }
       }
+    },
+    "form-lib": {
+      "projectType": "library",
+      "root": "projects/form-lib",
+      "sourceRoot": "projects/form-lib/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/form-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/form-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/form-lib/tsconfig.spec.json"
+          }
+        }
+      }
     }
   }
 }

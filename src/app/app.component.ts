@@ -2,8 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent } from './shared/components/dynamic-form/dynamic-form.component';
-import { FormSchema } from './core/models/form-schema.interface';
+import { DynamicFormComponent, FormSchema } from 'form-lib';
 import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({
@@ -12,11 +11,6 @@ import { Observable, catchError, last, of, tap } from 'rxjs';
     imports: [CommonModule, RouterModule],
     template: `
         <div style="padding: 20px; font-family: sans-serif;">
-            <h1>Generic Form Builder (MVP)</h1>
-            <nav>
-                <a routerLink="/demo">Demo Control</a>
-            </nav>
-            <hr />
             <router-outlet></router-outlet>
         </div>
     `,
