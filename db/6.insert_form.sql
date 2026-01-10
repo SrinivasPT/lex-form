@@ -28,7 +28,7 @@ VALUES (
     'control_form',
     'SECTION',
     'GROUP',
-    'control',
+    null, --'control', This key is not needed for section controls is we are not having the entity node
     'Controls',
     1,
     '[12]'

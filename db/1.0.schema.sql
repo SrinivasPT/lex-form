@@ -48,13 +48,13 @@ WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.form_history));
 CREATE TABLE dbo.control (
     code VARCHAR(128) PRIMARY KEY,
     
-    -- Hierarchy & Ownership
-    form_code VARCHAR(128),
-    parent_control_code VARCHAR(128) NULL, -- RECURSION: If NULL, it's a Root Level item (like a Main Section)
-    atomic_level_code VARCHAR(20) NOT NULL, -- 'FORM', 'SECTION', 'COMPOSITE', 'BASE'. COMPOSITE = Group of controls or Table
+    -- atomic_level_code values of COLUMN and TABLE are directly mapped to database structures. So their structure must align with the underlying DB schema.
+    -- atomic_level_code values of VIEW represent computed or derived data structures that may not have a direct database representation but are essential for UI rendering and user interaction.
+    atomic_level_code VARCHAR(20) NOT NULL, -- COLUMN, TABLE, VIEW
     
-    -- Identity & Visuals
-    type VARCHAR(32) NOT NULL, -- 'GROUP', 'TABLE', 'TEXT', 'SELECT', 'DATE', 'CHECKBOX', 'RADIO', 'FILE', 'NUMBER'
+    -- atomic level code = COLUMN can be 'TEXT', 'SELECT', 'DATE', 'CHECKBOX', 'RADIO', 'FILE', 'NUMBER', 
+    -- atomic level code IN [TABLE, VIEW] can be 'FORM', 'SECTION', 'TABLE', 'TAB'
+    type VARCHAR(32) NOT NULL, 
     [key] VARCHAR(128),        -- Data Binding Key (camelCase)
     label NVARCHAR(255),
     placeholder NVARCHAR(255),
@@ -64,7 +64,7 @@ CREATE TABLE dbo.control (
     -- Layout (Responsive Grid)
     -- Storing as JSON is cleaner than columns:  [12, 6, 4] for Mobile, Tablet, Desktop
     width NVARCHAR(MAX), 
-    layout_config NVARCHAR(MAX), -- JSON for complex layouts (e.g., Table columns, Group layouts)
+    additional_settings NVARCHAR(MAX), -- JSON for complex layouts (e.g., Table columns, Group layouts)
 
     -- Data Binding Source (For auto-generation/validation)
     source_table VARCHAR(128),
@@ -102,9 +102,7 @@ CREATE TABLE dbo.control (
     PERIOD FOR SYSTEM_TIME (sys_start_time, sys_end_time),
 
     -- Constraints
-    CONSTRAINT fk_control_form FOREIGN KEY (form_code) REFERENCES form(code),
-    CONSTRAINT fk_control_parent FOREIGN KEY (parent_control_code) REFERENCES control(code),
-    CONSTRAINT chk_layout_json CHECK (ISJSON(layout_config) = 1),
+    CONSTRAINT chk_additional_settings_json CHECK (ISJSON(additional_settings) = 1),
     CONSTRAINT chk_props_json CHECK (ISJSON(properties_json) = 1),
     CONSTRAINT chk_min_max CHECK (min_val <= max_val),
     CONSTRAINT chk_len_min_max CHECK (min_length <= max_length)
@@ -114,12 +112,14 @@ WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.control_history));
 -- =============================================
 -- 5. CONTROL RELATIONSHIP (Dependencies & Mappings)
 -- =============================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.control_group') AND type in (N'U'))
 CREATE TABLE dbo.control_group (
-    control_code VARCHAR(128) NOT NULL,        -- The control that has the relationship
+    control_code VARCHAR(128) NOT NULL,       -- The control that has the relationship
     child_control_code VARCHAR(128) NOT NULL, -- The control it relates to
     data_path VARCHAR(255) NULL,
     width NVARCHAR(MAX), -- Storing as JSON is cleaner than columns:  [12, 6, 4] for Mobile, Tablet, Desktop
     sort_order INT DEFAULT 0,
+    additional_settings NVARCHAR(MAX), -- JSON for complex layouts (e.g., Table columns, Group layouts)
 
     -- System Versioning
     guid UNIQUEIDENTIFIER DEFAULT NEWID(),

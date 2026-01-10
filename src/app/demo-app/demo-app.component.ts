@@ -31,29 +31,29 @@ export class DemoAppComponent implements OnInit {
 
     // 2. Mock Initial Data (Optional)
     initialValues = {
-        id: 'EMP_001',
-        firstName: 'John',
-        lastName: 'Doe',
-        nickName: 'Johnny',
-        email: 'john.doe@example.com',
-        dateOfBirth: '1985-06-15',
-        isMarried: true,
-        age: 38,
-        about: 'A brief bio about John Doe.',
-        nationality: 'IN',
-        hasNickName: false,
-        address: [
-            {
+        employee: {
+            id: 'EMP_001',
+            firstName: 'John',
+            lastName: 'Doe',
+            nickName: 'Johnny',
+            email: 'john.doe@example.com',
+            dateOfBirth: '1985-06-15',
+            isMarried: true,
+            age: 38,
+            about: 'A brief bio about John Doe.',
+            nationality: 'IN',
+            hasNickName: false,
+            address: {
                 street: '123 Main St',
                 city: 'Hyderabad',
                 countryCode: 'IN',
                 stateCode: 'TG',
             },
-        ],
-        dependents: [
-            { id: 'RP_1', firstName: 'Jane', lastName: 'Doe', relation: 'spouse', age: 30 },
-            { id: 'RP_2', firstName: 'Jimmy', lastName: 'Doe', relation: 'child', age: 5 },
-        ],
+            employeeDependent: [
+                { id: 'RP_1', firstName: 'Jane', lastName: 'Doe', relation: 'spouse', age: 30 },
+                { id: 'RP_2', firstName: 'Jimmy', lastName: 'Doe', relation: 'child', age: 5 },
+            ],
+        },
     };
 
     ngOnInit() {

@@ -119,6 +119,53 @@ app.get('/domain/:domainCode', async (req, res) => {
     }
 });
 
+// GET /control/:controlCode - Get control information as JSON
+app.get('/control/:controlCode', async (req, res) => {
+    try {
+        const { controlCode } = req.params;
+        const query = `
+        SELECT
+            c.code,
+            c.[key],
+            c.type,
+            c.label,
+            c.placeholder,
+            c.help_text AS helpText,
+            c.is_required AS required,
+            c.is_readonly AS readonly,
+            c.width AS width,
+            c.min_val AS min,
+            c.max_val AS max,
+            c.min_length AS minLength,
+            c.max_length AS maxLength,
+            c.pattern,
+            c.category_code AS categoryCode,
+            c.dependent_on AS dependentOn,
+            c.visible_when AS visibleWhen,
+            c.disabled_when AS disabledWhen,
+            c.required_when AS requiredWhen,
+            c.properties_json AS properties,
+            JSON_QUERY(dbo.fn_GetControlChildren(c.code)) AS controls
+        FROM dbo.control c
+        WHERE c.code = @controlCode
+        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        `;
+
+        const request = new sql.Request();
+        request.input('controlCode', sql.VarChar, controlCode);
+        const result = await request.query(query);
+        if (result.recordset.length > 0) {
+            const jsonKey = Object.keys(result.recordset[0])[0];
+            res.json(JSON.parse(result.recordset[0][jsonKey]));
+        } else {
+            res.status(404).json({ error: 'Control not found' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch control information' });
+    }
+});
+
 // Start server
 connectDB().then(() => {
     app.listen(PORT, () => {
