@@ -1,426 +1,179 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     TreeControlComponent,
     ControlDefinition,
     DynamicFormComponent,
     FormSchema,
+    FormAction,
 } from 'form-lib';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of } from 'rxjs';
-
-interface TreeOption {
-    code: string;
-    displayText: string;
-    parentCode?: string;
-}
+import { FormDataService, TreeOption } from '../core/services/form-data.service';
+import { tap, catchError, of, switchMap, filter, distinctUntilChanged } from 'rxjs';
 
 @Component({
     selector: 'app-form-admin-control',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, TreeControlComponent, DynamicFormComponent],
-    template: `
-        <div style="padding: 20px;">
-            <h2>Tree Control Demo</h2>
-            <div style="display: flex; gap: 20px;">
-                <div style="width: 20%; border-right: 1px solid #ddd; padding-right: 20px;">
-                    <form [formGroup]="formGroup">
-                        <app-tree-control
-                            [config]="treeConfig"
-                            [group]="formGroup"
-                        ></app-tree-control>
-                        <div style="margin-top: 20px;">
-                            <h3>Selected Value:</h3>
-                            <pre>{{ formGroup.get('treeField')?.value }}</pre>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="width: 80%;">
-                    @if (schema$ | async; as schema) {
-                    <app-dynamic-form [schema]="schema" [initialData]="initialValues">
-                    </app-dynamic-form>
-                    } @else {
-                    <p>Loading schema...</p>
-
-                    @if (error()) {
-                    <p style="color: red">Error: {{ error() }}</p>
-                    } }
-                </div>
-            </div>
-        </div>
-    `,
+    templateUrl: './form-admin-control.component.html',
+    styleUrls: ['./form-admin-control.component.scss'],
 })
 export class FormAdminControlComponent implements OnInit {
-    formGroup!: FormGroup;
-    private http = inject(HttpClient);
-    error = signal<string | null>(null);
-    initialValues: any = {};
-    form = signal<FormGroup | null>(null);
+    private readonly formDataService = inject(FormDataService);
+    private readonly fb = inject(FormBuilder);
+    private readonly destroyRef = inject(DestroyRef);
+    private loadingTimeout?: number;
 
-    schema$!: Observable<FormSchema | null>;
-
-    treeConfig: ControlDefinition = {
+    protected formGroup!: FormGroup;
+    protected readonly form = signal<FormGroup | null>(null);
+    protected readonly isInitialLoading = signal(true);
+    protected readonly isFormDataLoading = signal(false);
+    protected readonly error = signal<string | null>(null);
+    protected readonly successMessage = signal<string | null>(null);
+    protected readonly schema = signal<FormSchema | null>(null);
+    protected readonly initialValues = signal<Record<string, any>>({});
+    protected readonly selectedNodeCode = signal<string | null>(null);
+    protected readonly treeConfig = signal<ControlDefinition>({
         key: 'treeField',
         type: 'tree',
         label: 'Select from Tree',
-        // options: [
-        //     { code: 'electronics', displayText: 'Electronics' },
-        //     { code: 'computers', displayText: 'Computers', parentCode: 'electronics' },
-        //     { code: 'laptops', displayText: 'Laptops', parentCode: 'computers' },
-        //     { code: 'desktops', displayText: 'Desktops', parentCode: 'computers' },
-        //     { code: 'phones', displayText: 'Phones', parentCode: 'electronics' },
-        //     { code: 'smartphones', displayText: 'Smartphones', parentCode: 'phones' },
-        //     { code: 'featurephones', displayText: 'Feature Phones', parentCode: 'phones' },
-        //     { code: 'clothing', displayText: 'Clothing' },
-        //     { code: 'men', displayText: 'Men', parentCode: 'clothing' },
-        //     { code: 'shirts', displayText: 'Shirts', parentCode: 'men' },
-        //     { code: 'pants', displayText: 'Pants', parentCode: 'men' },
-        //     { code: 'women', displayText: 'Women', parentCode: 'clothing' },
-        //     { code: 'dresses', displayText: 'Dresses', parentCode: 'women' },
-        //     { code: 'skirts', displayText: 'Skirts', parentCode: 'women' },
-        // ] as any,
-        options: [
-            {
-                code: 'employee_section',
-                displayText: 'Employee Information (GROUP)',
-                type: 'GROUP',
-                key: 'employee',
-                level: 0,
-                path: 'employee_section',
-                sort_order: 1,
-            },
-            {
-                code: 'employee.about',
-                displayText: 'About (TEXT)',
-                type: 'TEXT',
-                key: 'about',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.about',
-                sort_order: 9,
-            },
-            {
-                code: 'employee.age',
-                displayText: 'Age (NUMBER)',
-                type: 'NUMBER',
-                key: 'age',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.age',
-                sort_order: 8,
-            },
-            {
-                code: 'employee.date_of_birth',
-                displayText: 'Date Of Birth (DATE)',
-                type: 'DATE',
-                key: 'dateOfBirth',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.date_of_birth',
-                sort_order: 6,
-            },
-            {
-                code: 'employee.email',
-                displayText: 'Email (TEXT)',
-                type: 'TEXT',
-                key: 'email',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.email',
-                sort_order: 5,
-            },
-            {
-                code: 'employee.first_name',
-                displayText: 'First Name (TEXT)',
-                type: 'TEXT',
-                key: 'firstName',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.first_name',
-                sort_order: 2,
-            },
-            {
-                code: 'employee.has_nick_name',
-                displayText: 'Has Nick Name (CHECKBOX)',
-                type: 'CHECKBOX',
-                key: 'hasNickName',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.has_nick_name',
-                sort_order: 11,
-            },
-            {
-                code: 'employee.id',
-                displayText: 'Id (TEXT)',
-                type: 'TEXT',
-                key: 'id',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.id',
-                sort_order: 1,
-            },
-            {
-                code: 'employee.is_married',
-                displayText: 'Is Married (CHECKBOX)',
-                type: 'CHECKBOX',
-                key: 'isMarried',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.is_married',
-                sort_order: 7,
-            },
-            {
-                code: 'employee.last_name',
-                displayText: 'Last Name (TEXT)',
-                type: 'TEXT',
-                key: 'lastName',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.last_name',
-                sort_order: 3,
-            },
-            {
-                code: 'employee.nationality',
-                displayText: 'Nationality (TEXT)',
-                type: 'TEXT',
-                key: 'nationality',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.nationality',
-                sort_order: 10,
-            },
-            {
-                code: 'employee.nick_name',
-                displayText: 'Nick Name (TEXT)',
-                type: 'TEXT',
-                key: 'nickName',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee.nick_name',
-                sort_order: 4,
-            },
-            {
-                code: 'employee_address_section',
-                displayText: 'Address Information (GROUP)',
-                type: 'GROUP',
-                key: 'address',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee_address_section',
-                sort_order: 2,
-            },
-            {
-                code: 'employee_address.city',
-                displayText: 'City (TEXT)',
-                type: 'TEXT',
-                key: 'city',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.city',
-                sort_order: 4,
-            },
-            {
-                code: 'employee_address.country_code',
-                displayText: 'Country Code (SELECT)',
-                type: 'SELECT',
-                key: 'countryCode',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.country_code',
-                sort_order: 5,
-            },
-            {
-                code: 'employee_address.employee_id',
-                displayText: 'Employee Id (TEXT)',
-                type: 'TEXT',
-                key: 'employeeId',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.employee_id',
-                sort_order: 2,
-            },
-            {
-                code: 'employee_address.id',
-                displayText: 'Id (NUMBER)',
-                type: 'NUMBER',
-                key: 'id',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.id',
-                sort_order: 1,
-            },
-            {
-                code: 'employee_address.state_code',
-                displayText: 'State Code (SELECT)',
-                type: 'SELECT',
-                key: 'stateCode',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.state_code',
-                sort_order: 6,
-            },
-            {
-                code: 'employee_address.street',
-                displayText: 'Street (TEXT)',
-                type: 'TEXT',
-                key: 'street',
-                parentCode: 'employee_address_section',
-                level: 2,
-                path: 'employee_section/employee_address_section/employee_address.street',
-                sort_order: 3,
-            },
-            {
-                code: 'employee_dependents_section',
-                displayText: 'Dependents (GROUP)',
-                type: 'GROUP',
-                key: 'dependents',
-                parentCode: 'employee_section',
-                level: 1,
-                path: 'employee_section/employee_dependents_section',
-                sort_order: 3,
-            },
-            {
-                code: 'employee_dependent.table',
-                displayText: 'Employee Dependent (TABLE)',
-                type: 'TABLE',
-                key: 'employeeDependent',
-                parentCode: 'employee_dependents_section',
-                level: 2,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table',
-                sort_order: 6,
-            },
-            {
-                code: 'employee_dependent.age',
-                displayText: 'Age (NUMBER)',
-                type: 'NUMBER',
-                key: 'age',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.age',
-                sort_order: 7,
-            },
-            {
-                code: 'employee_dependent.dep_id',
-                displayText: 'Dep Id (TEXT)',
-                type: 'TEXT',
-                key: 'depId',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.dep_id',
-                sort_order: 3,
-            },
-            {
-                code: 'employee_dependent.employee_id',
-                displayText: 'Employee Id (TEXT)',
-                type: 'TEXT',
-                key: 'employeeId',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.employee_id',
-                sort_order: 2,
-            },
-            {
-                code: 'employee_dependent.first_name',
-                displayText: 'First Name (TEXT)',
-                type: 'TEXT',
-                key: 'firstName',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.first_name',
-                sort_order: 4,
-            },
-            {
-                code: 'employee_dependent.guid',
-                displayText: 'Guid (TEXT)',
-                type: 'TEXT',
-                key: 'guid',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.guid',
-                sort_order: 8,
-            },
-            {
-                code: 'employee_dependent.id',
-                displayText: 'Id (NUMBER)',
-                type: 'NUMBER',
-                key: 'id',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.id',
-                sort_order: 1,
-            },
-            {
-                code: 'employee_dependent.last_name',
-                displayText: 'Last Name (TEXT)',
-                type: 'TEXT',
-                key: 'lastName',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.last_name',
-                sort_order: 5,
-            },
-            {
-                code: 'employee_dependent.relation',
-                displayText: 'Relation (TEXT)',
-                type: 'TEXT',
-                key: 'relation',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.relation',
-                sort_order: 6,
-            },
-            {
-                code: 'employee_dependent.sys_end_time',
-                displayText: 'Sys End Time (DATE)',
-                type: 'DATE',
-                key: 'sysEndTime',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.sys_end_time',
-                sort_order: 10,
-            },
-            {
-                code: 'employee_dependent.sys_start_time',
-                displayText: 'Sys Start Time (DATE)',
-                type: 'DATE',
-                key: 'sysStartTime',
-                parentCode: 'employee_dependent.table',
-                level: 3,
-                path: 'employee_section/employee_dependents_section/employee_dependent.table/employee_dependent.sys_start_time',
-                sort_order: 9,
-            },
-        ] as any,
-    };
+        options: [],
+    });
 
-    constructor(private fb: FormBuilder) {}
+    protected readonly formActions: FormAction[] = [
+        {
+            label: 'Save',
+            type: 'submit',
+            disabled: (form) => form.invalid || this.isFormDataLoading(),
+            handler: (form) => this.onSave(form),
+            class: 'btn-primary',
+        },
+        {
+            label: 'Reset',
+            type: 'reset',
+            handler: (form) => this.onReset(form),
+            class: 'btn-secondary',
+        },
+    ];
 
-    ngOnInit() {
-        this.schema$ = this.http.get<FormSchema>('http://localhost:3001/form/control_form').pipe(
-            tap((schema) => console.log('Schema fetched:', schema)),
-            catchError((err) => {
-                console.error('Error fetching schema:', err);
-                this.error.set(err.message || 'Unknown error');
-                return of(null);
-            })
-        );
+    ngOnInit(): void {
+        this.loadInitialFormData();
+    }
 
-        this.http.get('http://localhost:3001/control/control.table').subscribe({
-            next: (data) => {
-                this.initialValues = data;
-                console.log('Initial values fetched:', data);
-            },
-            error: (err) => {
-                console.error('Error fetching initial values:', err);
-                this.error.set(
-                    'Failed to fetch initial values: ' + (err.message || 'Unknown error')
-                );
-            },
-        });
+    /**
+     * Load all initial form data in parallel using forkJoin
+     */
+    private loadInitialFormData(): void {
+        this.isInitialLoading.set(true);
+        this.error.set(null);
+        this.successMessage.set(null);
 
-        this.formGroup = this.fb.group({
-            treeField: [''],
-        });
+        this.formDataService
+            .loadFormInitData('control_form', 'employee_section', 'control.table')
+            .pipe(
+                tap((data) => {
+                    this.treeConfig.set({
+                        key: 'treeField',
+                        type: 'tree',
+                        label: 'Select from Tree',
+                        options: data.treeHierarchy as any,
+                    });
+                    this.formGroup = this.fb.group({ treeField: ['control.table'] });
+                    this.setupTreeSelectionListener();
+                    this.schema.set(data.schema);
+                    this.initialValues.set(data.formData);
+                    this.selectedNodeCode.set('control.table');
+                    this.isInitialLoading.set(false);
+                }),
+                catchError((err) => {
+                    console.error('Failed to load form configuration', err);
+                    this.error.set('Failed to load form. Please refresh the page.');
+                    this.isInitialLoading.set(false);
+                    return of(null);
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    /**
+     * Setup reactive listener for tree selection changes
+     * Uses switchMap to cancel previous requests when selection changes quickly
+     * Delays loading indicator to prevent flickering on fast loads
+     */
+    private setupTreeSelectionListener(): void {
+        this.formGroup
+            .get('treeField')
+            ?.valueChanges.pipe(
+                filter((value) => value != null),
+                distinctUntilChanged(),
+                tap((selectedCode) => {
+                    this.selectedNodeCode.set(selectedCode);
+                    this.error.set(null);
+                    this.successMessage.set(null);
+                    this.loadingTimeout = window.setTimeout(
+                        () => this.isFormDataLoading.set(true),
+                        300
+                    );
+                }),
+                switchMap((selectedCode) =>
+                    this.formDataService.getFormData(selectedCode).pipe(
+                        catchError((err) => {
+                            console.error('Failed to load form data', err);
+                            this.error.set('Failed to load form data.');
+                            return of({});
+                        })
+                    )
+                ),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe((data) => {
+                if (this.loadingTimeout) {
+                    clearTimeout(this.loadingTimeout);
+                    this.loadingTimeout = undefined;
+                }
+                this.initialValues.set(data);
+                this.isFormDataLoading.set(false);
+                this.form()?.patchValue(data);
+            });
+    }
+
+    protected onFormReady(form: FormGroup): void {
+        this.form.set(form);
+    }
+
+    protected onSave(form: FormGroup): void {
+        const selectedCode = this.selectedNodeCode();
+        if (!selectedCode || form.invalid) return;
+
+        this.error.set(null);
+        this.successMessage.set(null);
+        this.isFormDataLoading.set(true);
+
+        this.formDataService
+            .saveFormData(selectedCode, form.value)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: () => {
+                    this.successMessage.set('Form saved successfully!');
+                    form.markAsPristine();
+                    this.isFormDataLoading.set(false);
+                    setTimeout(() => this.successMessage.set(null), 3000);
+                },
+                error: (err) => {
+                    console.error('Failed to save form', err);
+                    this.error.set('Failed to save form. Please try again.');
+                    this.isFormDataLoading.set(false);
+                },
+            });
+    }
+
+    protected onReset(form: FormGroup): void {
+        form.reset();
+        const initValues = this.initialValues();
+        if (initValues && Object.keys(initValues).length > 0) {
+            form.patchValue(initValues);
+        }
     }
 }

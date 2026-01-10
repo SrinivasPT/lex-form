@@ -166,6 +166,76 @@ app.get('/control/:controlCode', async (req, res) => {
     }
 });
 
+// GET /form/hierarchy/:rootControl - Get control hierarchy as JSON array
+app.get('/form/hierarchy/:rootControl', async (req, res) => {
+    try {
+        const { rootControl } = req.params;
+        const query = `
+        WITH ControlHierarchy AS (
+            -- Start with the root control
+            SELECT
+                c.code,
+                COALESCE(c.label, c.[key], c.code) + ' (' + c.type + ')' AS displayText,
+                c.type,
+                c.[key],
+                c.sort_order,
+                CAST(NULL AS VARCHAR(128)) AS parentCode,
+                0 AS level,
+                CAST(c.code AS VARCHAR(MAX)) AS path
+            FROM dbo.control c
+            WHERE c.code = @rootControl
+
+            UNION ALL
+
+            -- Child controls with their parents (from control_group)
+            SELECT
+                c.code,
+                COALESCE(c.label, c.[key], c.code) + ' (' + c.type + ')' AS displayText,
+                c.type,
+                c.[key],
+                c.sort_order,
+                cg.control_code AS parentCode,
+                ch.level + 1 AS level,
+                CAST(ch.path + '/' + c.code AS VARCHAR(MAX)) AS path
+            FROM dbo.control c
+            INNER JOIN dbo.control_group cg ON c.code = cg.child_control_code
+            INNER JOIN ControlHierarchy ch ON cg.control_code = ch.code
+        )
+        SELECT
+            code,
+            displayText,
+            type,
+            [key],
+            parentCode,
+            level,
+            path,
+            sort_order
+        FROM ControlHierarchy
+        ORDER BY path, sort_order
+        FOR JSON PATH
+        `;
+
+        const request = new sql.Request();
+        request.input('rootControl', sql.VarChar, rootControl);
+        const result = await request.query(query);
+        let data = [];
+        if (result.recordset.length > 0) {
+            const jsonKey = Object.keys(result.recordset[0])[0];
+            const jsonString = result.recordset[0][jsonKey];
+            try {
+                data = JSON.parse(jsonString);
+            } catch (e) {
+                console.error('Invalid JSON from query:', e);
+                data = [];
+            }
+        }
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch control hierarchy' });
+    }
+});
+
 // Start server
 connectDB().then(() => {
     app.listen(PORT, () => {

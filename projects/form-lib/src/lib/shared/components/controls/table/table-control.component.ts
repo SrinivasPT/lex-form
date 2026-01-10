@@ -167,7 +167,7 @@ export interface FormActionEvent {
                 width: 100%;
                 overflow: hidden;
             }
-            
+
             .table-wrapper {
                 width: 100%;
                 max-width: 100%;
@@ -176,13 +176,13 @@ export interface FormActionEvent {
                 padding: 10px;
                 background: #fff;
             }
-            
+
             .table-responsive {
                 width: 100%;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            
+
             /* TABLE STYLES */
             .data-table {
                 width: 100%;

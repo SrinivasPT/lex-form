@@ -1,0 +1,48 @@
+<div class="form-admin-container">
+    <header class="form-admin-header">
+        <h2>Form Administration</h2>
+    </header>
+
+    <div class="form-admin-content">
+        <!-- Tree Navigation Panel -->
+        <aside class="tree-panel" role="navigation" aria-label="Form navigation">
+            @if (isInitialLoading()) {
+            <p class="loading-message" role="status" aria-live="polite">Loading tree...</p>
+            } @else {
+            <form [formGroup]="formGroup">
+                <app-tree-control [config]="treeConfig()" [group]="formGroup"></app-tree-control>
+                <div class="tree-selection-info">
+                    <h3>Selected Node:</h3>
+                    <pre>{{ selectedNodeCode() || 'None' }}</pre>
+                </div>
+            </form>
+            }
+        </aside>
+
+        <!-- Main Form Panel -->
+        <main class="form-panel" role="main">
+            @if (isInitialLoading()) {
+            <p class="loading-message" role="status" aria-live="polite">Loading form...</p>
+            } @else if (error()) {
+            <div class="error-message" role="alert" aria-live="assertive">
+                {{ error() }}
+            </div>
+            } @else { @if (successMessage()) {
+            <div class="success-message" role="status" aria-live="polite">
+                {{ successMessage() }}
+            </div>
+            } @if (isFormDataLoading()) {
+            <p class="loading-message" role="status" aria-live="polite">Loading form data...</p>
+            } @if (schema()) {
+            <app-dynamic-form
+                [schema]="schema()!"
+                [initialData]="initialValues()"
+                [actions]="formActions"
+                (formReady)="onFormReady($event)"
+                [attr.aria-busy]="isFormDataLoading()"
+            >
+            </app-dynamic-form>
+            } }
+        </main>
+    </div>
+</div>

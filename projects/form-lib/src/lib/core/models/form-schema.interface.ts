@@ -1,3 +1,5 @@
+import { FormGroup } from '@angular/forms';
+
 export type ControlType =
     | 'text'
     | 'number'
@@ -104,4 +106,15 @@ export interface ActionDefinition {
     cssClass?: string; // 'btn-danger'
     visibleWhen?: string; // 'row.status == "draft"'
     ariaLabel?: string; // Accessibility label
+}
+
+/**
+ * Form-level action configuration for DynamicFormComponent
+ */
+export interface FormAction {
+    label: string; // Button text
+    type?: 'submit' | 'button' | 'reset'; // Button type (default: 'button')
+    disabled?: (form: FormGroup) => boolean; // Function to determine if button should be disabled
+    handler: (form: FormGroup) => void; // Callback when button is clicked
+    class?: string; // CSS class for styling
 }

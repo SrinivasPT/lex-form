@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent, FormSchema } from 'form-lib';
+import { DynamicFormComponent, FormSchema, FormAction } from 'form-lib';
 import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({
@@ -14,7 +14,13 @@ import { Observable, catchError, last, of, tap } from 'rxjs';
             <hr />
 
             @if (schema$ | async; as schema) {
-            <app-dynamic-form [schema]="schema" [initialData]="initialValues"> </app-dynamic-form>
+            <app-dynamic-form
+                [schema]="schema"
+                [initialData]="initialValues"
+                [actions]="formActions"
+                (formReady)="onFormReady($event)"
+            >
+            </app-dynamic-form>
             } @else {
             <p>Loading schema...</p>
             @if (error()) {
@@ -28,6 +34,22 @@ export class DemoAppComponent implements OnInit {
 
     schema$!: Observable<FormSchema | null>;
     error = signal<string | null>(null);
+    form = signal<any>(null);
+
+    formActions: FormAction[] = [
+        {
+            label: 'Submit',
+            type: 'submit',
+            disabled: (form) => form.invalid,
+            handler: (form) => this.onSubmit(form),
+            class: 'btn-primary',
+        },
+        {
+            label: 'Debug Value',
+            handler: (form) => this.onDebug(form),
+            class: 'btn-secondary',
+        },
+    ];
 
     // 2. Mock Initial Data (Optional)
     initialValues = {
@@ -66,5 +88,18 @@ export class DemoAppComponent implements OnInit {
                 return of(null);
             })
         );
+    }
+
+    onFormReady(form: any) {
+        this.form.set(form);
+        console.log('Form ready:', form);
+    }
+
+    onSubmit(form: any) {
+        console.log('Form Submitted:', form.value);
+    }
+
+    onDebug(form: any) {
+        console.log(JSON.stringify(form.value, null, 2));
     }
 }

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { FormSchema } from '../../../core/models/form-schema.interface';
+import { FormSchema, FormAction } from '../../../core/models/form-schema.interface';
 import { SchemaResolverService } from '../../../core/services/schema-resolver.service';
 import { FormGeneratorService } from '../../../core/services/form-generator.service';
 import { DynamicControlComponent } from '../dynamic-control/dynamic-control.component';
@@ -24,10 +24,20 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
                     }
                 </div>
 
+                @if (actions.length > 0) {
                 <div class="form-actions">
-                    <button type="submit" [disabled]="form()!.invalid">Submit</button>
-                    <button type="button" (click)="debug()">Debug Value</button>
+                    @for (action of actions; track action.label) {
+                    <button
+                        [type]="action.type || 'button'"
+                        [disabled]="action.disabled?.(form()!)"
+                        [class]="action.class || ''"
+                        (click)="action.type !== 'submit' && handleAction(action)"
+                    >
+                        {{ action.label }}
+                    </button>
+                    }
                 </div>
+                }
             </form>
         </div>
         }
@@ -52,6 +62,8 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
 export class DynamicFormComponent implements OnInit {
     @Input({ required: true }) schema!: FormSchema;
     @Input() initialData?: any;
+    @Input() actions: FormAction[] = [];
+    @Output() formReady = new EventEmitter<FormGroup>();
 
     // Services
     private resolver = inject(SchemaResolverService);
@@ -75,13 +87,19 @@ export class DynamicFormComponent implements OnInit {
         }
 
         this.form.set(formGroup);
+        this.formReady.emit(formGroup);
     }
 
     onSubmit() {
-        console.log('Form Submitted:', this.form()?.value);
+        const submitAction = this.actions.find((a) => a.type === 'submit');
+        if (submitAction && this.form()) {
+            submitAction.handler(this.form()!);
+        }
     }
 
-    debug() {
-        console.log(JSON.stringify(this.form()?.value, null, 2));
+    handleAction(action: FormAction) {
+        if (this.form()) {
+            action.handler(this.form()!);
+        }
     }
 }

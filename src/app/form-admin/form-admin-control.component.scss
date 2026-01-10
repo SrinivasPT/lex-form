@@ -1,0 +1,58 @@
+.form-admin-container {
+    padding: 20px;
+}
+
+.form-admin-header {
+    margin-bottom: 20px;
+}
+
+.form-admin-content {
+    display: flex;
+    gap: 20px;
+}
+
+.tree-panel {
+    width: 20%;
+    border-right: 1px solid #ddd;
+    padding-right: 20px;
+}
+
+.tree-selection-info {
+    margin-top: 20px;
+
+    h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    pre {
+        background: #f5f5f5;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+}
+
+.form-panel {
+    width: 80%;
+}
+
+.loading-message,
+.error-message {
+    padding: 16px;
+    text-align: center;
+}
+
+.error-message {
+    color: #d32f2f;
+    background: #ffebee;
+    border-radius: 4px;
+}
+
+.success-message {
+    color: #2e7d32;
+    background: #e8f5e9;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
