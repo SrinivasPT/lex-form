@@ -1,105 +1,78 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent, FormSchema, FormAction } from 'form-lib';
-import { Observable, catchError, last, of, tap } from 'rxjs';
+import { FormGroup } from '@angular/forms';
+import { GenericFormComponent, FormAction } from 'form-lib';
 
+/**
+ * Demo App Component - Simplified with GenericFormComponent
+ *
+ * Before: 140+ lines with manual state management, loading, actions, etc.
+ * After: ~40 lines - just configuration and custom handlers
+ *
+ * GenericFormComponent handles:
+ * - Form content loading from route resolver
+ * - Header with title and alerts
+ * - Loading/saving states with spinner
+ * - Default save/cancel actions
+ * - Form state management
+ */
 @Component({
     selector: 'app-demo-app',
     standalone: true,
-    imports: [CommonModule, DynamicFormComponent],
+    imports: [CommonModule, GenericFormComponent],
     template: `
-        <div style="padding: 20px; font-family: sans-serif;">
-            <h1>Generic Form Builder (MVP)</h1>
-            <hr />
-
-            @if (schema$ | async; as schema) {
-            <app-dynamic-form
-                [schema]="schema"
-                [initialData]="initialValues"
-                [actions]="formActions"
-                (formReady)="onFormReady($event)"
-            >
-            </app-dynamic-form>
-            } @else {
-            <p>Loading schema...</p>
-            @if (error()) {
-            <p style="color: red">Error: {{ error() }}</p>
-            } }
-        </div>
+        <!-- Simple: Just pass route data and handle save events -->
+        <lib-generic-form
+            [showHeader]="true"
+            [saveSuccessMessage]="'Employee data saved successfully!'"
+            [trackByField]="'employee.id'"
+            [customActions]="customActions"
+            (formReady)="onFormReady($event)"
+            (save)="onSaveCustom($event)"
+        />
     `,
+    styles: [],
 })
-export class DemoAppComponent implements OnInit {
-    private http = inject(HttpClient);
-
-    schema$!: Observable<FormSchema | null>;
-    error = signal<string | null>(null);
-    form = signal<any>(null);
-
-    formActions: FormAction[] = [
+export class DemoAppComponent {
+    // Optional: Add custom actions alongside default ones
+    protected readonly customActions: FormAction[] = [
         {
-            label: 'Submit',
+            label: 'Save',
             type: 'submit',
-            disabled: (form) => form.invalid,
-            handler: (form) => this.onSubmit(form),
+            disabled: (form: FormGroup) => form.invalid,
+            handler: (form: FormGroup) => {
+                console.log('Saving employee:', form.value);
+                // GenericFormComponent handles the actual save
+            },
             class: 'btn-primary',
         },
         {
             label: 'Debug Value',
-            handler: (form) => this.onDebug(form),
+            handler: (form: FormGroup) => this.onDebug(form),
+            class: 'btn-secondary',
+        },
+        {
+            label: 'Cancel',
+            handler: () => console.log('Cancel clicked'),
             class: 'btn-secondary',
         },
     ];
 
-    // 2. Mock Initial Data (Optional)
-    initialValues = {
-        employee: {
-            id: 'EMP_001',
-            firstName: 'John',
-            lastName: 'Doe',
-            nickName: 'Johnny',
-            email: 'john.doe@example.com',
-            dateOfBirth: '1985-06-15',
-            isMarried: true,
-            age: 38,
-            about: 'A brief bio about John Doe.',
-            nationality: 'IN',
-            hasNickName: false,
-            address: {
-                street: '123 Main St',
-                city: 'Hyderabad',
-                countryCode: 'IN',
-                stateCode: 'TG',
-            },
-            employeeDependent: [
-                { id: 'RP_1', firstName: 'Jane', lastName: 'Doe', relation: 'spouse', age: 30 },
-                { id: 'RP_2', firstName: 'Jimmy', lastName: 'Doe', relation: 'child', age: 5 },
-            ],
-        },
-    };
-
-    ngOnInit() {
-        console.log('DemoAppComponent initialized, fetching schema...');
-        this.schema$ = this.http.get<FormSchema>('http://localhost:3001/form/employee_form').pipe(
-            tap((schema) => console.log('Schema fetched:', schema)),
-            catchError((err) => {
-                console.error('Error fetching schema:', err);
-                this.error.set(err.message || 'Unknown error');
-                return of(null);
-            })
-        );
-    }
-
-    onFormReady(form: any) {
-        this.form.set(form);
+    protected onFormReady(form: FormGroup): void {
         console.log('Form ready:', form);
+        // Optional: Add custom form logic here
     }
 
-    onSubmit(form: any) {
-        console.log('Form Submitted:', form.value);
+    protected onSaveCustom(form: FormGroup): void {
+        // Optional: Custom save handling before/after default save
+        console.log('Custom save handler:', form.value);
     }
 
-    onDebug(form: any) {
-        console.log(JSON.stringify(form.value, null, 2));
+    protected onDebug(form: FormGroup): void {
+        console.log('=== Form Debug Info ===');
+        console.log('Form Value:', form.value);
+        console.log('Form Valid:', form.valid);
+        console.log('Form Dirty:', form.dirty);
+        console.log('=====================');
     }
 }

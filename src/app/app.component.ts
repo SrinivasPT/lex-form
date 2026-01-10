@@ -1,62 +1,56 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { DynamicFormComponent, FormSchema } from 'form-lib';
-import { Observable, catchError, last, of, tap } from 'rxjs';
 
 @Component({
     selector: 'app-root',
     standalone: true,
     imports: [CommonModule, RouterModule],
     template: `
-        <div style="padding: 20px; font-family: sans-serif;">
+        <div style="font-family: sans-serif;">
+            <nav
+                style="background: #333; color: white; padding: 10px 20px; display: flex; gap: 20px; align-items: center;"
+            >
+                <h3 style="margin: 0;">LexForm Demo</h3>
+                <a
+                    routerLink="/demo-app/EMP_001"
+                    routerLinkActive="active"
+                    style="color: white; text-decoration: none; padding: 5px 10px;"
+                    >Employee 001</a
+                >
+                <a
+                    routerLink="/demo-app/EMP_002"
+                    routerLinkActive="active"
+                    style="color: white; text-decoration: none; padding: 5px 10px;"
+                    >Employee 002</a
+                >
+                <a
+                    routerLink="/demo-control"
+                    routerLinkActive="active"
+                    style="color: white; text-decoration: none; padding: 5px 10px;"
+                    >Demo Control</a
+                >
+                <a
+                    routerLink="/form-admin"
+                    routerLinkActive="active"
+                    style="color: white; text-decoration: none; padding: 5px 10px;"
+                    >Form Admin</a
+                >
+            </nav>
             <router-outlet></router-outlet>
         </div>
     `,
+    styles: [
+        `
+            nav a.active {
+                background: #555;
+                border-radius: 4px;
+            }
+            nav a:hover {
+                background: #444;
+                border-radius: 4px;
+            }
+        `,
+    ],
 })
-export class AppComponent implements OnInit {
-    private http = inject(HttpClient);
-
-    schema$!: Observable<FormSchema | null>;
-    error = signal<string | null>(null);
-
-    // 2. Mock Initial Data (Optional)
-    initialValues = {
-        id: 'EMP_001',
-        firstName: 'John',
-        lastName: 'Doe',
-        nickName: 'Johnny',
-        email: 'john.doe@example.com',
-        dateOfBirth: '1985-06-15',
-        isMarried: true,
-        age: 38,
-        about: 'A brief bio about John Doe.',
-        nationality: 'IN',
-        hasNickName: false,
-        address: [
-            {
-                street: '123 Main St',
-                city: 'Hyderabad',
-                countryCode: 'IN',
-                stateCode: 'TG',
-            },
-        ],
-        dependents: [
-            { id: 'RP_1', firstName: 'Jane', lastName: 'Doe', relation: 'spouse', age: 30 },
-            { id: 'RP_2', firstName: 'Jimmy', lastName: 'Doe', relation: 'child', age: 5 },
-        ],
-    };
-
-    ngOnInit() {
-        console.log('AppComponent initialized, fetching schema...');
-        this.schema$ = this.http.get<FormSchema>('http://localhost:3001/form/employee_form').pipe(
-            tap((schema) => console.log('Schema fetched:', schema)),
-            catchError((err) => {
-                console.error('Error fetching schema:', err);
-                this.error.set(err.message || 'Unknown error');
-                return of(null);
-            })
-        );
-    }
-}
+export class AppComponent {}
