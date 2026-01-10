@@ -184,9 +184,17 @@ export class FormGeneratorService {
             if (typeof c === 'string') return;
 
             const control = c as ControlDefinition;
-            if (!control.key) return;
-
             const normalizedType = this.normalizeType(control.type);
+
+            // Handle groups without keys first (flattened groups)
+            if (normalizedType === 'group' && !control.key && control.controls) {
+                // Flattened group: recurse with same data and group
+                this.patchControlsRecursively(group, data, control.controls);
+                return;
+            }
+
+            // Skip controls without key (except flattened groups handled above)
+            if (!control.key) return;
 
             if (normalizedType === 'table') {
                 // Handle table (FormArray) - needs special patching
@@ -209,7 +217,7 @@ export class FormGeneratorService {
                     });
                 }
             } else if (normalizedType === 'group' && control.controls) {
-                // Recursively patch nested groups
+                // Recursively patch nested groups with keys
                 const nestedGroup = group.get(control.key) as FormGroup;
                 if (nestedGroup && data?.[control.key]) {
                     this.patchControlsRecursively(nestedGroup, data[control.key], control.controls);

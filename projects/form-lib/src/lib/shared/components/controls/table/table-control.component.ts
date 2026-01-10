@@ -161,17 +161,34 @@ export interface FormActionEvent {
     `,
     styles: [
         `
-            /* TABLE STYLES */
+            /* HOST & CONTAINER STYLES */
+            :host {
+                display: block;
+                width: 100%;
+                overflow: hidden;
+            }
+            
             .table-wrapper {
+                width: 100%;
+                max-width: 100%;
                 border: 1px solid #ddd;
                 border-radius: 6px;
                 padding: 10px;
                 background: #fff;
             }
+            
+            .table-responsive {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* TABLE STYLES */
             .data-table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 5px;
+                min-width: 500px; /* Minimum width before horizontal scrolling */
             }
             .data-table th,
             .data-table td {

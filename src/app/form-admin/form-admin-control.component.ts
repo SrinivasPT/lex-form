@@ -23,22 +23,32 @@ interface TreeOption {
     template: `
         <div style="padding: 20px;">
             <h2>Tree Control Demo</h2>
-            <form [formGroup]="formGroup">
-                <app-tree-control [config]="treeConfig" [group]="formGroup"></app-tree-control>
-                <div style="margin-top: 20px;">
-                    <h3>Selected Value:</h3>
-                    <pre>{{ formGroup.get('treeField')?.value }}</pre>
+            <div style="display: flex; gap: 20px;">
+                <div style="width: 20%; border-right: 1px solid #ddd; padding-right: 20px;">
+                    <form [formGroup]="formGroup">
+                        <app-tree-control
+                            [config]="treeConfig"
+                            [group]="formGroup"
+                        ></app-tree-control>
+                        <div style="margin-top: 20px;">
+                            <h3>Selected Value:</h3>
+                            <pre>{{ formGroup.get('treeField')?.value }}</pre>
+                        </div>
+                    </form>
                 </div>
-            </form>
 
-            @if (schema$ | async; as schema) {
-            <app-dynamic-form [schema]="schema" [initialData]="initialValues"> </app-dynamic-form>
-            } @else {
-            <p>Loading schema...</p>
+                <div style="width: 80%;">
+                    @if (schema$ | async; as schema) {
+                    <app-dynamic-form [schema]="schema" [initialData]="initialValues">
+                    </app-dynamic-form>
+                    } @else {
+                    <p>Loading schema...</p>
 
-            @if (error()) {
-            <p style="color: red">Error: {{ error() }}</p>
-            } }
+                    @if (error()) {
+                    <p style="color: red">Error: {{ error() }}</p>
+                    } }
+                </div>
+            </div>
         </div>
     `,
 })
@@ -47,6 +57,7 @@ export class FormAdminControlComponent implements OnInit {
     private http = inject(HttpClient);
     error = signal<string | null>(null);
     initialValues: any = {};
+    form = signal<FormGroup | null>(null);
 
     schema$!: Observable<FormSchema | null>;
 

@@ -38,11 +38,11 @@ VALUES (
 INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
 SELECT 'control_form_section', code, ROW_NUMBER() OVER (ORDER BY sort_order) + 1
 FROM dbo.control
-WHERE atomic_level_code = 'BASE' AND source_table = 'form' AND code NOT LIKE '%sys_start_time%' AND code NOT LIKE '%sys_end_time%';
+WHERE atomic_level_code = 'BASE' AND source_table = 'control' AND code NOT LIKE '%sys_start_time%' AND code NOT LIKE '%sys_end_time%';
 
 -- Associate the section with the control table control
 INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
-VALUES ('control_form_section', 'control.table', 1);
+VALUES ('control_form_section', 'control.table', 40);
 
 -- =============================================
 -- EMPLOYEE FORM CREATION
