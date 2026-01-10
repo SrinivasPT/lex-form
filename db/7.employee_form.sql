@@ -71,6 +71,35 @@ VALUES (
     '[12]'
 );
 
+-- Insert the dependents section
+INSERT INTO dbo.control (
+    code,
+    form_code,
+    atomic_level_code,
+    type,
+    [key],
+    label,
+    sort_order,
+    width
+)
+VALUES (
+    'employee_tab_group',
+    NULL,
+    'SECTION',
+    'TAB_GROUP',
+    NULL,
+    'Employee Tabs',
+    3,
+    '[12]'
+);
+
+-- Associate tab group with Address and Dependents sections
+INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
+VALUES ('employee_tab_group', 'employee_address_section', 1);
+
+INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
+VALUES ('employee_tab_group', 'employee_dependents_section', 2);
+
 -- Associate employee section with employee table BASE controls
 INSERT INTO dbo.control_group (control_code, child_control_code, sort_order)
 SELECT 'employee_section', code, ROW_NUMBER() OVER (ORDER BY sort_order)

@@ -354,6 +354,12 @@ app.get('/api/employee/:id', async (req, res) => {
                         },
                     ],
                 },
+                address: {
+                    street: '123 Main St - Root',
+                    city: 'Hyderabad',
+                    countryCode: 'IN',
+                    stateCode: 'TG',
+                },
             },
             EMP_002: {
                 employee: {

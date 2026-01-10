@@ -1,4 +1,13 @@
-import { Component, Input, OnInit, OnDestroy, inject, signal, HostBinding } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    OnDestroy,
+    inject,
+    signal,
+    HostBinding,
+    forwardRef,
+} from '@angular/core';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 import { Subscription, startWith } from 'rxjs';
@@ -18,11 +27,17 @@ import { SelectControlComponent } from '../controls/select-control.component';
 import { DateControlComponent } from '../controls/date-control.component';
 import { TableControlComponent } from '../controls/table/table-control.component';
 import { TreeControlComponent } from '../controls/tree-control.component';
+import { TabGroupComponent } from '../tab-group/tab-group.component';
 
 @Component({
     selector: 'app-dynamic-control',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, NgComponentOutlet],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        NgComponentOutlet,
+        forwardRef(() => TabGroupComponent),
+    ],
     template: `
         @if (isVisible()) {
         <div class="control-wrapper responsive-col">
@@ -57,6 +72,8 @@ import { TreeControlComponent } from '../controls/tree-control.component';
                 </div>
                 }
             </div>
+            } @case ('tab_group') {
+            <app-tab-group [config]="config" [group]="group"> </app-tab-group>
             } @default {
             <div class="unknown-control">Unknown type: {{ config.type }}</div>
             } } } } @else {
@@ -178,11 +195,17 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // For group controls without a key, skip control resolution - it's just a logical container
-        if (this.normalizedType === 'group' && !this.config.key) {
+        // For group/tab_group controls without a key, skip control resolution - it's just a logical container
+        if (
+            (this.normalizedType === 'group' || this.normalizedType === 'tab_group') &&
+            !this.config.key
+        ) {
             this.resolvedControl.set(this.group); // Set to current group for rendering
             this.wrapperGroup.set(this.group); // Pass through the parent group
-            console.log(`[DynamicControl] Keyless group - using parent group:`, this.group);
+            console.log(
+                `[DynamicControl] Keyless ${this.normalizedType} - using parent group:`,
+                this.group
+            );
             return;
         }
 

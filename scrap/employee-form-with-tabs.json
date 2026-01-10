@@ -1,0 +1,198 @@
+{
+    "code": "employee_form_with_tabs",
+    "version": "1.0.0",
+    "label": "Employee Form with Tabs",
+    "sections": [
+        {
+            "label": "Quick Actions",
+            "key": "quickActions",
+            "type": "GROUP",
+            "width": "[12]",
+            "controls": [
+                {
+                    "code": "employee.status",
+                    "key": "Status",
+                    "type": "SELECT",
+                    "label": "Status",
+                    "required": true,
+                    "options": [
+                        { "label": "Active", "value": "active" },
+                        { "label": "Inactive", "value": "inactive" },
+                        { "label": "On Leave", "value": "on_leave" }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Employee Details",
+            "type": "TAB_GROUP",
+            "controls": [
+                {
+                    "label": "General Information",
+                    "key": "employee",
+                    "type": "GROUP",
+                    "controls": [
+                        {
+                            "code": "employee.id",
+                            "key": "Id",
+                            "type": "TEXT",
+                            "label": "Employee ID",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 50,
+                            "width": 6
+                        },
+                        {
+                            "code": "employee.first_name",
+                            "key": "FirstName",
+                            "type": "TEXT",
+                            "label": "First Name",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "width": 6
+                        },
+                        {
+                            "code": "employee.last_name",
+                            "key": "LastName",
+                            "type": "TEXT",
+                            "label": "Last Name",
+                            "required": true,
+                            "readonly": false,
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "width": 6
+                        },
+                        {
+                            "code": "employee.email",
+                            "key": "Email",
+                            "type": "TEXT",
+                            "label": "Email",
+                            "required": true,
+                            "readonly": false,
+                            "maxLength": 255,
+                            "width": 6
+                        }
+                    ]
+                },
+                {
+                    "label": "Address",
+                    "key": "address",
+                    "type": "GROUP",
+                    "controls": [
+                        {
+                            "code": "employee_address.street",
+                            "key": "Street",
+                            "type": "TEXT",
+                            "label": "Street",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 255,
+                            "width": 12
+                        },
+                        {
+                            "code": "employee_address.city",
+                            "key": "City",
+                            "type": "TEXT",
+                            "label": "City",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 100,
+                            "width": 6
+                        },
+                        {
+                            "code": "employee_address.state_code",
+                            "key": "StateCode",
+                            "type": "TEXT",
+                            "label": "State Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 10,
+                            "width": 3
+                        },
+                        {
+                            "code": "employee_address.country_code",
+                            "key": "CountryCode",
+                            "type": "TEXT",
+                            "label": "Country Code",
+                            "required": false,
+                            "readonly": false,
+                            "maxLength": 10,
+                            "width": 3
+                        }
+                    ]
+                },
+                {
+                    "label": "Dependents",
+                    "key": "dependents",
+                    "type": "GROUP",
+                    "controls": [
+                        {
+                            "code": "employee_dependents_table",
+                            "key": "EmployeeDependents",
+                            "type": "TABLE",
+                            "label": "Dependents",
+                            "required": false,
+                            "readonly": false,
+                            "controls": [
+                                {
+                                    "code": "employee_dependent.id",
+                                    "key": "Id",
+                                    "type": "NUMBER",
+                                    "label": "ID",
+                                    "required": true,
+                                    "readonly": false
+                                },
+                                {
+                                    "code": "employee_dependent.first_name",
+                                    "key": "FirstName",
+                                    "type": "TEXT",
+                                    "label": "First Name",
+                                    "required": true,
+                                    "readonly": false,
+                                    "minLength": 2,
+                                    "maxLength": 100
+                                },
+                                {
+                                    "code": "employee_dependent.relationship",
+                                    "key": "Relationship",
+                                    "type": "TEXT",
+                                    "label": "Relationship",
+                                    "required": false,
+                                    "readonly": false,
+                                    "maxLength": 50
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Audit Information",
+            "key": "audit",
+            "type": "GROUP",
+            "width": "[12]",
+            "controls": [
+                {
+                    "code": "employee.created_date",
+                    "key": "CreatedDate",
+                    "type": "DATE",
+                    "label": "Created Date",
+                    "readonly": true,
+                    "width": 6
+                },
+                {
+                    "code": "employee.modified_date",
+                    "key": "ModifiedDate",
+                    "type": "DATE",
+                    "label": "Modified Date",
+                    "readonly": true,
+                    "width": 6
+                }
+            ]
+        }
+    ]
+}

@@ -13,7 +13,7 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
     template: `
         @if (form()) {
         <div class="dynamic-form-container">
-            <h2>{{ resolvedSchema()?.label }}</h2>
+            <!-- <h2>{{ resolvedSchema()?.label }}</h2> -->
 
             <form [formGroup]="form()!" (ngSubmit)="onSubmit()">
                 <div class="sections-wrapper">

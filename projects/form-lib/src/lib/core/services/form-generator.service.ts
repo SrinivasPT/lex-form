@@ -55,8 +55,12 @@ export class FormGeneratorService {
 
             const normalizedType = this.normalizeType(control.type);
 
-            // For groups without a key, don't create a nested structure - flatten into parent
-            if (normalizedType === 'group' && !control.key && control.controls) {
+            // TAB_GROUP or GROUP without key: No key, purely presentational - flatten nested controls into parent
+            if (
+                (normalizedType === 'tab_group' || normalizedType === 'group') &&
+                !control.key &&
+                control.controls
+            ) {
                 // Flatten: merge children directly into current structure
                 const childStructure = this.buildControls(control.controls, controlMap, parentPath);
                 Object.assign(structure, childStructure);

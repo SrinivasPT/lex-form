@@ -9,6 +9,7 @@ export type ControlType =
     | 'table'
     | 'tree'
     | 'group'
+    | 'tab_group'
     | 'TEXT'
     | 'NUMBER'
     | 'CHECKBOX'
@@ -16,7 +17,8 @@ export type ControlType =
     | 'DATE'
     | 'TABLE'
     | 'TREE'
-    | 'GROUP';
+    | 'GROUP'
+    | 'TAB_GROUP';
 
 // 1. The Schema Contract
 export interface FormSchema {
@@ -95,7 +97,7 @@ export interface ControlDefinition {
     min?: number;
     max?: number;
 
-    // Recursion (For Tables/Groups)
+    // Recursion (For Tables/Groups/TAB_GROUP)
     controls?: ControlConfig[];
 }
 

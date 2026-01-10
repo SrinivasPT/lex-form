@@ -38,7 +38,7 @@ export class SchemaResolverService {
             // Config wins (Right side of spread)
             const merged = { ...libraryDef, ...config };
 
-            // Recursively resolve children for group/table controls
+            // Recursively resolve children for group/table/tab_group controls
             if (merged.controls) {
                 merged.controls = merged.controls.map((c) => this.resolveControl(c));
             }
