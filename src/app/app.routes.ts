@@ -13,5 +13,13 @@ export const routes: Routes = [
         resolve: { formContent: FormContentResolver },
         data: { formId: 'employee_form' },
     },
-    { path: 'form-admin', component: FormAdminControlComponent },
+    {
+        path: 'form-admin/:formCode',
+        component: FormAdminControlComponent,
+    },
+    {
+        path: 'form-admin',
+        redirectTo: '/form-admin/control_form',
+        pathMatch: 'full',
+    },
 ];

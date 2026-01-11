@@ -1,6 +1,25 @@
 <div class="form-admin-container">
     <header class="form-admin-header">
         <h2>Form Administration</h2>
+        <div class="header-actions">
+            <button
+                mat-raised-button
+                color="primary"
+                (click)="onCreateControl()"
+                [disabled]="!selectedNodeCode() || isFormDataLoading()"
+            >
+                <mat-icon>add</mat-icon>
+                Create Control
+            </button>
+            <button
+                mat-raised-button
+                (click)="onAssociateControls()"
+                [disabled]="!selectedNodeCode() || isFormDataLoading()"
+            >
+                <mat-icon>link</mat-icon>
+                Associate Controls
+            </button>
+        </div>
     </header>
 
     <div class="form-admin-content">
@@ -10,7 +29,15 @@
             <p class="loading-message" role="status" aria-live="polite">Loading tree...</p>
             } @else {
             <form [formGroup]="formGroup">
-                <app-tree-control [config]="treeConfig()" [group]="formGroup"></app-tree-control>
+                <div
+                    class="tree-wrapper"
+                    (contextmenu)="onTreeContextMenu($event, selectedNodeCode()!)"
+                >
+                    <app-tree-control
+                        [config]="treeConfig()"
+                        [group]="formGroup"
+                    ></app-tree-control>
+                </div>
                 <div class="tree-selection-info">
                     <h3>Selected Node:</h3>
                     <pre>{{ selectedNodeCode() || 'None' }}</pre>
@@ -27,11 +54,7 @@
             <div class="error-message" role="alert" aria-live="assertive">
                 {{ error() }}
             </div>
-            } @else { @if (successMessage()) {
-            <div class="success-message" role="status" aria-live="polite">
-                {{ successMessage() }}
-            </div>
-            } @if (isFormDataLoading()) {
+            } @else { @if (isFormDataLoading()) {
             <p class="loading-message" role="status" aria-live="polite">Loading form data...</p>
             } @if (schema()) {
             <app-dynamic-form
@@ -46,3 +69,27 @@
         </main>
     </div>
 </div>
+
+<!-- Context Menu -->
+<div
+    style="visibility: hidden; position: fixed"
+    [style.left]="contextMenuPosition().x"
+    [style.top]="contextMenuPosition().y"
+    [matMenuTriggerFor]="contextMenu"
+></div>
+
+<mat-menu #contextMenu="matMenu">
+    <button mat-menu-item (click)="onCreateControl()" [disabled]="!canShowContextMenu()">
+        <mat-icon>add</mat-icon>
+        <span>Create Child Control</span>
+    </button>
+    <button mat-menu-item (click)="onAssociateControls()" [disabled]="!canShowContextMenu()">
+        <mat-icon>link</mat-icon>
+        <span>Associate Controls</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="onDelete()" [disabled]="!canShowContextMenu()">
+        <mat-icon color="warn">delete</mat-icon>
+        <span>Delete</span>
+    </button>
+</mat-menu>

@@ -136,4 +136,112 @@ export class FormDataService {
             })
         );
     }
+
+    // ============================================
+    // Form Admin API Methods
+    // ============================================
+
+    /**
+     * Get all controls for Form Admin
+     */
+    getAllControls(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/api/form-admin/controls`).pipe(
+            tap((controls) => console.log('All controls loaded:', controls)),
+            catchError((err) => {
+                console.error('Error loading all controls:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Create new control (SECTION/TAB/GROUP)
+     */
+    createControl(controlData: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}/api/form-admin/control`, controlData).pipe(
+            tap((response) => console.log('Control created:', response)),
+            catchError((err) => {
+                console.error('Error creating control:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Update control metadata
+     */
+    updateControl(code: string, updateData: any): Observable<any> {
+        return this.http.put(`${this.baseUrl}/api/form-admin/control/${code}`, updateData).pipe(
+            tap((response) => console.log('Control updated:', response)),
+            catchError((err) => {
+                console.error('Error updating control:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Delete control (removes association for BASE, deletes control for SECTION if no dependencies)
+     */
+    deleteControl(code: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/api/form-admin/control/${code}`).pipe(
+            tap((response) => console.log('Control deleted:', response)),
+            catchError((err) => {
+                console.error('Error deleting control:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Check if control can be deleted
+     */
+    canDeleteControl(code: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/api/form-admin/control/${code}/can-delete`).pipe(
+            tap((response) => console.log('Delete check:', response)),
+            catchError((err) => {
+                console.error('Error checking delete eligibility:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Create control associations (bulk)
+     */
+    createControlAssociations(
+        parentCode: string,
+        childCodes: string[],
+        dataPath?: string,
+        width?: string
+    ): Observable<any> {
+        const payload = {
+            control_code: parentCode,
+            child_control_codes: childCodes,
+            data_path: dataPath,
+            width: width,
+        };
+        return this.http.post(`${this.baseUrl}/api/form-admin/control-group`, payload).pipe(
+            tap((response) => console.log('Associations created:', response)),
+            catchError((err) => {
+                console.error('Error creating associations:', err);
+                throw err;
+            })
+        );
+    }
+
+    /**
+     * Delete control association
+     */
+    deleteControlAssociation(parentCode: string, childCode: string): Observable<any> {
+        return this.http
+            .delete(`${this.baseUrl}/api/form-admin/control-group/${parentCode}/${childCode}`)
+            .pipe(
+                tap((response) => console.log('Association deleted:', response)),
+                catchError((err) => {
+                    console.error('Error deleting association:', err);
+                    throw err;
+                })
+            );
+    }
 }

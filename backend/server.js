@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Import routers
+const formAdminRouter = require('./form_admin');
+
 // SQL Server Configuration
 const dbConfig = {
     server: process.env.DB_SERVER,
@@ -32,6 +35,9 @@ async function connectDB() {
         console.error('Database connection failed:', err);
     }
 }
+
+// Mount routers
+app.use('/api/form-admin', formAdminRouter);
 
 // Routes
 
