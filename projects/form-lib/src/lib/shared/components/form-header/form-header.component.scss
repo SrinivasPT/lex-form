@@ -2,11 +2,11 @@
 @use '../../../styles/mixins' as *;
 
 .page-header {
-    margin-bottom: 24px;
+    margin: $form-gap-lg 0; /* add vertical margin for top and bottom spacing */
 }
 
 .page-header h1 {
-    margin: 0 0 8px 0;
+    margin: 0;
     font-size: 28px;
     font-weight: $form-font-weight-bold;
     color: #1a1a1a;

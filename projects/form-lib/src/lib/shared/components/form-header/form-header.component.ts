@@ -19,12 +19,15 @@ import { AlertComponent } from '../alert/alert.component';
             }
         </div>
 
-        <!-- Alerts Container -->
+        <!-- Alerts Container: render only when there are messages -->
+        @if (formState.state().loadError || formState.state().actionError ||
+        formState.state().successMessage) {
         <div class="alerts-container">
             <lib-alert [message]="formState.state().loadError ?? null" [type]="'error'" />
             <lib-alert [message]="formState.state().actionError ?? null" [type]="'error'" />
             <lib-alert [message]="formState.state().successMessage ?? null" [type]="'success'" />
         </div>
+        }
     `,
     styleUrls: ['./form-header.component.scss'],
 })

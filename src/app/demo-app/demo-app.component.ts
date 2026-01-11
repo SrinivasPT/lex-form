@@ -5,7 +5,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { GenericFormComponent, FormAction, FormContentService } from 'form-lib';
 import { CrudFormLayoutComponent } from '../shared/layout/crud-form-layout.component';
-import { FormLayoutComponent } from '../shared/layout/form-layout.component';
 
 /**
  * Demo App Component - Simplified with GenericFormComponent
@@ -23,25 +22,22 @@ import { FormLayoutComponent } from '../shared/layout/form-layout.component';
 @Component({
     selector: 'app-demo-app',
     standalone: true,
-    imports: [CommonModule, GenericFormComponent, CrudFormLayoutComponent, FormLayoutComponent],
+    imports: [CommonModule, GenericFormComponent, CrudFormLayoutComponent],
     template: `
-        <!-- Page layout with header/footer -->
-        <app-form-layout>
-            <!-- CRUD layout provides form header, alerts, spinner -->
-            <app-crud-form-layout
-                [formState]="formState()"
-                [showHeader]="true"
-                [loadingMessage]="'Loading employee form...'"
-            >
-                <lib-generic-form
-                    [saveSuccessMessage]="'Employee data saved successfully!'"
-                    [trackByField]="'employee.id'"
-                    [customActions]="customActions"
-                    (formReady)="onFormReady($event)"
-                    (save)="onSaveCustom($event)"
-                />
-            </app-crud-form-layout>
-        </app-form-layout>
+        <!-- CRUD layout provides form header, alerts, spinner -->
+        <app-crud-form-layout
+            [formState]="formState()"
+            [showHeader]="true"
+            [loadingMessage]="'Loading employee form...'"
+        >
+            <lib-generic-form
+                [saveSuccessMessage]="'Employee data saved successfully!'"
+                [trackByField]="'employee.id'"
+                [customActions]="customActions"
+                (formReady)="onFormReady($event)"
+                (save)="onSaveCustom($event)"
+            />
+        </app-crud-form-layout>
     `,
     styles: [],
 })

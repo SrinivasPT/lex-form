@@ -74,9 +74,9 @@ import { SpinnerComponent } from '../../../../projects/form-lib/src/lib/shared/c
     styles: [
         `
             .crud-form-layout {
-                max-width: 95vw;
-                margin: 0 auto;
-                padding: 20px;
+                max-width: 100%; /* inherit container width from page layout */
+                margin: 0;
+                padding: 0; /* no padding - let content control its own spacing */
             }
 
             .content-area {

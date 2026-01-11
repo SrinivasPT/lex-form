@@ -51,9 +51,9 @@ import { AppFooterComponent } from './app-footer.component';
             }
 
             .form-layout-container {
-                max-width: 95vw;
+                max-width: 100vw;
                 margin: 0 auto;
-                padding: 20px;
+                padding: 0 12px; /* zero top/bottom, keep side padding for alignment */
             }
 
             /* Responsive adjustments */

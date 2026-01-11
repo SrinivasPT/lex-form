@@ -53,7 +53,7 @@ import { RouterModule } from '@angular/router';
             .header-content {
                 max-width: 95vw;
                 margin: 0 auto;
-                padding: 16px 20px;
+                padding: 12px 12px; /* tighter left/right padding to align with content */
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
