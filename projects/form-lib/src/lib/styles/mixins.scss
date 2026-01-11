@@ -1,0 +1,242 @@
+// Form Library Mixins
+// Reusable style patterns
+
+@use 'sass:color';
+@use './variables' as *;
+
+// Control wrapper base
+@mixin control-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+// Fieldset styling
+@mixin fieldset-base {
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    padding: $form-padding;
+    margin: 0;
+    background: $form-bg-alt;
+}
+
+@mixin fieldset-legend {
+    font-weight: $form-font-weight-medium;
+    font-size: $form-font-size-lg;
+    padding: 0 $form-padding;
+    background: $form-bg-default;
+    border-radius: $form-border-radius;
+    color: $form-label-color;
+}
+
+// Grid layout mixin
+@mixin grid-12-layout($gap: $form-gap) {
+    display: grid;
+    grid-template-columns: repeat($grid-columns, minmax(0, 1fr));
+    gap: $gap;
+}
+
+// Button base styles
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: $form-input-padding-y $form-input-padding-x;
+    font-size: $form-font-size;
+    font-weight: $form-font-weight-medium;
+    border: $form-border-width solid transparent;
+    border-radius: $form-border-radius;
+    cursor: pointer;
+    transition: all $form-transition-speed $form-transition-timing;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+@mixin button-primary {
+    @include button-base;
+    background-color: $form-primary-color;
+    color: white;
+
+    &:hover:not(:disabled) {
+        background-color: $form-primary-hover;
+    }
+}
+
+@mixin button-secondary {
+    @include button-base;
+    background-color: $form-bg-alt;
+    color: $form-text-color;
+    border-color: $form-border-color;
+
+    &:hover:not(:disabled) {
+        background-color: $form-bg-hover;
+    }
+}
+
+@mixin button-danger {
+    @include button-base;
+    background-color: $form-danger-color;
+    color: white;
+
+    &:hover:not(:disabled) {
+        background-color: color.adjust($form-danger-color, $lightness: -10%);
+    }
+}
+
+// Input base styles
+@mixin input-base {
+    width: 100%;
+    height: $form-input-height;
+    padding: $form-input-padding-y $form-input-padding-x;
+    font-size: $form-font-size-lg;
+    font-family: $form-font-family;
+    line-height: 1.4;
+    color: $form-text-color;
+    background-color: $form-bg-default;
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    transition: border-color $form-transition-speed $form-transition-timing,
+        box-shadow $form-transition-speed $form-transition-timing;
+
+    &:focus {
+        outline: none;
+        border-color: $form-primary-color;
+        box-shadow: $form-shadow-focus;
+    }
+
+    &:disabled {
+        background-color: $form-bg-disabled;
+        cursor: not-allowed;
+    }
+
+    &.error {
+        border-color: $form-error-color;
+    }
+}
+
+// Label styles
+@mixin label-base {
+    display: block;
+    margin-bottom: 4px;
+    font-size: $form-font-size;
+    font-weight: $form-font-weight-medium;
+    color: $form-label-color;
+}
+
+// Error message styles
+@mixin error-message {
+    color: $form-error-color;
+    font-size: $form-font-size-sm;
+    margin-top: 4px;
+}
+
+// Card/Panel styles
+@mixin card-base {
+    background: $form-bg-default;
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    padding: $form-padding;
+    box-shadow: $form-shadow-sm;
+}
+
+// Table styles
+@mixin table-base {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $form-font-size-lg;
+
+    th,
+    td {
+        padding: $form-padding-sm $form-padding;
+        text-align: left;
+        border-bottom: $form-border-width solid $table-border-color;
+    }
+
+    th {
+        background-color: $table-header-bg;
+        color: $table-header-color;
+        font-weight: $form-font-weight-medium;
+    }
+
+    tbody tr {
+        &:hover {
+            background-color: $table-row-hover-bg;
+        }
+    }
+}
+
+// Scrollbar styling
+@mixin custom-scrollbar($width: 8px) {
+    &::-webkit-scrollbar {
+        width: $width;
+        height: $width;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $form-bg-alt;
+        border-radius: $form-border-radius;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $form-border-color-dark;
+        border-radius: $form-border-radius;
+
+        &:hover {
+            background: color.adjust($form-border-color-dark, $lightness: -10%);
+        }
+    }
+}
+
+// Truncate text with ellipsis
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Flex center
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Flex between (space-between)
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+// Screen reader only
+@mixin sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+// Responsive breakpoint mixins
+@mixin respond-above($breakpoint) {
+    @media (min-width: $breakpoint) {
+        @content;
+    }
+}
+
+@mixin respond-below($breakpoint) {
+    @media (max-width: #{$breakpoint - 1px}) {
+        @content;
+    }
+}

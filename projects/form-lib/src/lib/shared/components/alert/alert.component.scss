@@ -1,0 +1,58 @@
+@use '../../../styles/variables' as *;
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: $form-gap;
+    padding: $form-padding $form-padding-lg;
+    margin-bottom: $form-gap-lg;
+    border-radius: calc($form-border-radius + 2px);
+    font-size: $form-font-size;
+    line-height: 1.5;
+    border: $form-border-width solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-icon {
+    font-size: $form-font-size-lg;
+    flex-shrink: 0;
+}
+
+.alert-message {
+    flex: 1;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: $form-bg-error;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-warning {
+    background-color: $form-bg-warning;
+    border-color: #ffeeba;
+    color: #856404;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}

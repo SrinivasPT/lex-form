@@ -14,12 +14,12 @@ interface TreeOption {
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, TreeControlComponent],
     template: `
-        <div style="padding: 20px;">
+        <div class="content-container">
             <h2>Tree Control Demo</h2>
             <form [formGroup]="formGroup">
                 <app-tree-control [config]="treeConfig" [group]="formGroup"></app-tree-control>
             </form>
-            <div style="margin-top: 20px;">
+            <div class="section-container">
                 <h3>Selected Value:</h3>
                 <pre>{{ formGroup.get('treeField')?.value }}</pre>
             </div>

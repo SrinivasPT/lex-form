@@ -1,0 +1,117 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.tab-group-wrapper {
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.tab-group-title {
+    margin-bottom: 1rem;
+    font-size: $form-font-size-xl;
+    font-weight: $form-font-weight-medium;
+    color: $form-text-color;
+}
+
+.tab-content {
+    padding: 1.5rem $form-padding;
+    background-color: $form-bg-alt;
+    @include grid-12-layout;
+}
+
+.error-badge {
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background-color: $form-danger-color;
+    color: white;
+    border-radius: 12px;
+    font-size: $form-font-size-sm;
+    font-weight: $form-font-weight-bold;
+}
+
+// Make Angular Material tabs match section background and borders
+:host ::ng-deep .mat-tab-header {
+    background: $form-bg-alt !important;
+    border: $form-border-width solid $tab-border-color;
+    border-bottom: none;
+    border-top-left-radius: $form-border-radius;
+    border-top-right-radius: $form-border-radius;
+    padding: 0 $form-padding-sm;
+}
+
+/* Ensure the header list and labels also inherit the gray (covers deeper DOM from Material) */
+:host ::ng-deep .mat-tab-header .mat-tab-list,
+:host ::ng-deep .mat-tab-header .mat-tab-labels {
+    background: $form-bg-alt !important;
+}
+
+/* Force active tab styling with maximum specificity */
+:host ::ng-deep .mat-tab-group .mat-tab-header .mat-tab-label.mat-tab-label-active,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active .mat-tab-label-content,
+:host ::ng-deep .mat-tab-header .mat-tab-label.mat-tab-label-active .mat-tab-label-content {
+    background-color: $form-primary-color !important;
+    background: $form-primary-color !important;
+    color: white !important;
+    border: 1px solid $form-primary-color !important;
+    border-bottom: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Keep the body consistent */
+:host ::ng-deep .mat-tab-body {
+    background: $form-bg-alt;
+}
+
+:host ::ng-deep .mat-tab-label {
+    background: $form-bg-alt;
+    margin-right: $form-gap-sm;
+    padding: $form-padding-sm $form-padding;
+    font-size: $form-font-size;
+    color: $form-text-color;
+    border-radius: $form-border-radius;
+    border: 1px solid $form-border-color;
+    border-bottom: none;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active {
+    background: $form-primary-color !important;
+    font-weight: $form-font-weight-medium;
+    color: white !important;
+    box-shadow: none;
+    border: 1px solid $form-primary-color !important;
+    border-bottom: none !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ink bar (active underline) uses primary color but subtle */
+:host ::ng-deep .mat-ink-bar {
+    background: $tab-active-border-color;
+    height: 2px;
+}
+
+:host ::ng-deep .mat-tab-body {
+    background: $form-bg-alt;
+    padding: $form-padding;
+    border: $form-border-width solid $form-border-color;
+    border-top: none;
+    border-bottom-left-radius: $form-border-radius;
+    border-bottom-right-radius: $form-border-radius;
+}
+
+/* Ensure nested fieldsets and panels inside tabs match section visual style */
+:host ::ng-deep .mat-tab-body fieldset,
+:host ::ng-deep .mat-tab-body .fieldset,
+:host ::ng-deep .mat-tab-body .panel {
+    background: $form-bg-alt;
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    padding: $form-padding;
+    margin-bottom: $form-gap;
+}
+
+:host ::ng-deep .mat-tab-body-wrapper {
+    background: transparent;
+}

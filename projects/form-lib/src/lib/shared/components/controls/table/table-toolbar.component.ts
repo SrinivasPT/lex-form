@@ -32,34 +32,7 @@ import { ActionDefinition } from '../../../../core/models/form-schema.interface'
             </div>
         </div>
     `,
-    styles: [
-        `
-            .toolbar-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                margin-bottom: 8px;
-                gap: 10px;
-            }
-            .header-actions {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-            .search-input {
-                padding: 6px 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                min-width: 200px;
-            }
-            .btn-sm {
-                padding: 5px 10px;
-                cursor: pointer;
-            }
-        `,
-    ],
+    styleUrls: ['./table-toolbar.component.scss'],
 })
 export class TableToolbarComponent {
     @Input() searchable = false;

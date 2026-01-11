@@ -17,55 +17,7 @@ import { CommonModule } from '@angular/common';
         </div>
         }
     `,
-    styles: [
-        `
-            .spinner-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 40px;
-            }
-
-            .spinner-container.overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(255, 255, 255, 0.9);
-                z-index: 1000;
-                padding: 0;
-            }
-
-            .spinner {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 16px;
-            }
-
-            .spinner-circle {
-                width: 40px;
-                height: 40px;
-                border: 4px solid #f0f0f0;
-                border-top-color: #3b82f6;
-                border-radius: 50%;
-                animation: spin 0.8s linear infinite;
-            }
-
-            @keyframes spin {
-                to {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .spinner-message {
-                color: #666;
-                font-size: 14px;
-                font-weight: 500;
-            }
-        `,
-    ],
+    styleUrls: ['./spinner.component.scss'],
 })
 export class SpinnerComponent {
     @Input() show = false;

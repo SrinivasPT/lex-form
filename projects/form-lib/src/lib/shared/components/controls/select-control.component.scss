@@ -1,0 +1,30 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.form-field {
+    @include control-wrapper;
+    margin-bottom: $form-gap;
+}
+
+label {
+    @include label-base;
+}
+
+.form-select {
+    @include input-base;
+    background-color: $form-bg-default;
+    cursor: pointer;
+
+    &:disabled {
+        background-color: $form-bg-disabled;
+        cursor: not-allowed;
+    }
+}
+
+.required {
+    color: $form-error-color;
+}
+
+.error-msg {
+    @include error-message;
+}

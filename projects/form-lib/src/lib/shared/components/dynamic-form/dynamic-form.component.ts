@@ -42,22 +42,7 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
         </div>
         }
     `,
-    styles: [
-        `
-            .sections-wrapper {
-                display: grid;
-                grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: 16px;
-                width: 100%;
-                box-sizing: border-box;
-            }
-
-            /* Grid children should respect host grid-column spans */
-            .sections-wrapper > * {
-                min-width: 0;
-            }
-        `,
-    ],
+    styleUrls: ['./dynamic-form.component.scss'],
 })
 export class DynamicFormComponent implements OnInit {
     @Input({ required: true }) schema!: FormSchema;

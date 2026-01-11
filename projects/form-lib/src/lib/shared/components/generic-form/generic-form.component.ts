@@ -108,42 +108,7 @@ export interface GenericFormConfig {
             </div>
         </div>
     `,
-    styles: [
-        `
-            .generic-form-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-                    Arial, sans-serif;
-            }
-
-            .content-area {
-                position: relative;
-                min-height: 200px;
-            }
-
-            .form-wrapper {
-                background: #fff;
-                border-radius: 8px;
-                padding: 24px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            .error-container {
-                background: #fff;
-                border-radius: 8px;
-                padding: 24px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            .error-message {
-                color: #d32f2f;
-                margin: 0;
-                text-align: center;
-            }
-        `,
-    ],
+    styleUrls: ['./generic-form.component.scss'],
 })
 export class GenericFormComponent implements OnInit {
     // Inputs - can provide either config object or individual properties

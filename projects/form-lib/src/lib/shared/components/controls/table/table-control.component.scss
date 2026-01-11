@@ -1,0 +1,166 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+/* HOST & CONTAINER STYLES */
+:host {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+}
+
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    padding: $form-padding;
+    background: $form-bg-alt; /* Match section/background */
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* TABLE STYLES */
+.data-table {
+    @include table-base;
+    margin-top: 5px;
+    min-width: 500px; /* Minimum width before horizontal scrolling */
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    background: $form-bg-alt; /* Match section background */
+
+    th,
+    td {
+        padding: 4px;
+        border-bottom: $form-border-width solid $form-border-color-light;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    th {
+        background: $table-header-bg;
+        font-weight: $form-font-weight-medium;
+        color: $table-header-color;
+        padding: $form-padding-sm $form-padding;
+        font-size: $form-font-size;
+    }
+
+    /* CSS Strategy: Hide labels inside table cells */
+    td ::ng-deep label {
+        display: none !important;
+    }
+
+    /* Remove margin from form fields inside table */
+    td ::ng-deep .form-field {
+        margin-bottom: 0 !important;
+    }
+
+    tbody tr {
+        &:hover {
+            background-color: $table-row-hover-bg;
+        }
+    }
+}
+
+/* Sorting */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background: #f0f0f0;
+    }
+}
+
+.sort-icon {
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+/* Actions */
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+    padding: 4px;
+    color: $form-text-muted;
+    transition: all $form-transition-speed $form-transition-timing;
+
+    &:hover {
+        color: $form-text-color;
+        background: $form-bg-hover;
+        border-radius: $form-border-radius;
+    }
+}
+
+.btn-primary {
+    @include button-primary;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 20px;
+    color: $form-text-light;
+    font-style: italic;
+}
+
+/* --- RESPONSIVE CSS-ONLY STRATEGY --- */
+@media (max-width: $breakpoint-md) {
+    .data-table,
+    .data-table thead,
+    .data-table tbody,
+    .data-table th,
+    .data-table td,
+    .data-table tr {
+        display: block;
+    }
+
+    .data-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .data-table tr {
+        border: $form-border-width solid #ccc;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        padding: $form-padding-sm;
+        box-shadow: $form-shadow-sm;
+    }
+
+    .data-table td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        min-height: 24px;
+        margin-bottom: 4px;
+
+        &:before {
+            position: absolute;
+            left: $form-padding;
+            width: 45%;
+            padding-right: $form-padding;
+            white-space: nowrap;
+            font-weight: $form-font-weight-bold;
+            content: attr(data-label);
+            color: #444;
+        }
+    }
+
+    .action-cell {
+        padding-left: $form-padding !important;
+        text-align: right;
+        border-top: $form-border-width solid $form-border-color-light;
+        margin-top: $form-padding-sm;
+        padding-top: $form-padding-sm;
+
+        &:before {
+            display: none;
+        }
+    }
+}

@@ -42,38 +42,7 @@ import { DynamicControlComponent } from '../dynamic-control/dynamic-control.comp
             </mat-tab-group>
         </div>
     `,
-    styles: [
-        `
-            .tab-group-wrapper {
-                margin: 1rem 0;
-                width: 100%;
-            }
-
-            .tab-group-title {
-                margin-bottom: 1rem;
-                font-size: 1.25rem;
-                font-weight: 500;
-                color: #333;
-            }
-
-            .tab-content {
-                padding: 1.5rem 0;
-                display: grid;
-                grid-template-columns: repeat(12, minmax(0, 1fr));
-                gap: 12px;
-            }
-
-            .error-badge {
-                margin-left: 0.5rem;
-                padding: 0.125rem 0.5rem;
-                background-color: #d32f2f;
-                color: white;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: bold;
-            }
-        `,
-    ],
+    styleUrls: ['./tab-group.component.scss'],
 })
 export class TabGroupComponent {
     @Input({ required: true }) config!: ControlDefinition;

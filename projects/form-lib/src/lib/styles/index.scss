@@ -1,0 +1,13 @@
+// Form Library Styles - Public API
+// Import this file in your application to get the base theme
+
+// CSS Custom Properties (Theme)
+@use './theme';
+
+// Utility Classes
+@use './utilities';
+
+// SCSS Variables and Mixins (for component development)
+// Consumers can also import these for custom styling
+@forward './variables';
+@forward './mixins';

@@ -45,33 +45,7 @@ import { DomainData, DomainValue } from '../../../core/services/domain-data.serv
             }
         </div>
     `,
-    styles: [
-        `
-            .form-field {
-                margin-bottom: 12px;
-            }
-            .form-select {
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                box-sizing: border-box;
-                background-color: white;
-            }
-            .form-select:disabled {
-                background-color: #f5f5f5;
-                cursor: not-allowed;
-            }
-            .required {
-                color: red;
-            }
-            .error-msg {
-                color: red;
-                font-size: 0.8em;
-                margin-top: 4px;
-            }
-        `,
-    ],
+    styleUrls: ['./select-control.component.scss'],
 })
 export class SelectControlComponent implements OnInit {
     @Input({ required: true }) config!: ControlDefinition;

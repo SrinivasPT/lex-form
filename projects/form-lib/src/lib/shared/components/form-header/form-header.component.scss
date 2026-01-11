@@ -1,0 +1,23 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: $form-font-weight-bold;
+    color: #1a1a1a;
+}
+
+.description {
+    margin: 0;
+    color: $form-text-muted;
+    font-size: $form-font-size;
+}
+
+.alerts-container {
+    margin-bottom: $form-gap-lg;
+}

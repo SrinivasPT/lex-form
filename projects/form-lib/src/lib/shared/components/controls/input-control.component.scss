@@ -1,0 +1,23 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.form-field {
+    @include control-wrapper;
+    margin-bottom: $form-gap;
+}
+
+label {
+    @include label-base;
+}
+
+.form-input {
+    @include input-base;
+}
+
+.required {
+    color: $form-error-color;
+}
+
+.error-msg {
+    @include error-message;
+}

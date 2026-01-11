@@ -29,28 +29,7 @@ import { ControlDefinition } from '../../../core/models/form-schema.interface';
             }
         </div>
     `,
-    styles: [
-        `
-            .form-field {
-                margin-bottom: 12px;
-            }
-            .form-input {
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            .required {
-                color: red;
-            }
-            .error-msg {
-                color: red;
-                font-size: 0.8em;
-                margin-top: 4px;
-            }
-        `,
-    ],
+    styleUrls: ['./input-control.component.scss'],
 })
 export class InputControlComponent {
     @Input({ required: true }) config!: ControlDefinition;

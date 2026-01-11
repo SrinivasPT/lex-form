@@ -1,0 +1,34 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.pagination-container {
+    @include flex-between;
+    padding: $form-padding 0;
+    border-top: $form-border-width solid $form-border-color-light;
+    margin-top: $form-padding;
+    font-size: 0.9em;
+}
+
+.page-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.page-btn {
+    padding: 4px $form-padding;
+    cursor: pointer;
+    border: $form-border-width solid $form-border-color;
+    background: $form-bg-default;
+    border-radius: $form-border-radius;
+    transition: all $form-transition-speed $form-transition-timing;
+
+    &:hover:not(:disabled) {
+        background: $form-bg-hover;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}

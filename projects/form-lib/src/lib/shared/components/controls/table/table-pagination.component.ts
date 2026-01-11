@@ -32,35 +32,7 @@ import { CommonModule } from '@angular/common';
             </div>
         </div>
     `,
-    styles: [
-        `
-            .pagination-container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 0;
-                border-top: 1px solid #eee;
-                margin-top: 10px;
-                font-size: 0.9em;
-            }
-            .page-controls {
-                display: flex;
-                gap: 5px;
-                align-items: center;
-            }
-            .page-btn {
-                padding: 4px 10px;
-                cursor: pointer;
-                border: 1px solid #ccc;
-                background: #fff;
-                border-radius: 4px;
-            }
-            .page-btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-        `,
-    ],
+    styleUrls: ['./table-pagination.component.scss'],
 })
 export class TablePaginationComponent {
     @Input({ required: true }) totalItems = 0;

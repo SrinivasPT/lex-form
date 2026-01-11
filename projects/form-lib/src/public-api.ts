@@ -25,3 +25,8 @@ export { SpinnerComponent } from './lib/shared/components/spinner/spinner.compon
 export { FormHeaderComponent } from './lib/shared/components/form-header/form-header.component';
 export { FormContentService } from './lib/core/services/form-content.service';
 export { FormContentResolver } from './lib/core/resolvers/form-content.resolver';
+
+// Styles - Consumers can import SCSS files directly in their styles:
+// @use '@your-org/form-lib/styles' as form-lib;
+// Or import individual files:
+// @use '@your-org/form-lib/styles/variables' as *;

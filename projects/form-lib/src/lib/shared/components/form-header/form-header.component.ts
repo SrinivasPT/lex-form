@@ -26,30 +26,7 @@ import { AlertComponent } from '../alert/alert.component';
             <lib-alert [message]="formState.state().successMessage ?? null" [type]="'success'" />
         </div>
     `,
-    styles: [
-        `
-            .page-header {
-                margin-bottom: 24px;
-            }
-
-            .page-header h1 {
-                margin: 0 0 8px 0;
-                font-size: 28px;
-                font-weight: 600;
-                color: #1a1a1a;
-            }
-
-            .description {
-                margin: 0;
-                color: #666;
-                font-size: 14px;
-            }
-
-            .alerts-container {
-                margin-bottom: 16px;
-            }
-        `,
-    ],
+    styleUrls: ['./form-header.component.scss'],
 })
 export class FormHeaderComponent {
     @Input({ required: true }) formState!: FormContentSignals;

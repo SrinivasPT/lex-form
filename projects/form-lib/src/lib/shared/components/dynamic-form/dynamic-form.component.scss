@@ -1,0 +1,13 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.sections-wrapper {
+    @include grid-12-layout($form-gap-lg);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Grid children should respect host grid-column spans */
+.sections-wrapper > * {
+    min-width: 0;
+}

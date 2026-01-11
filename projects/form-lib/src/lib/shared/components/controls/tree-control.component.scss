@@ -1,0 +1,85 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.form-field {
+    margin-bottom: $form-gap;
+}
+
+.tree-control label {
+    @include label-base;
+    margin-bottom: $form-padding-sm;
+}
+
+.required {
+    color: $form-error-color;
+}
+
+.tree-container {
+    border: $form-border-width solid $form-border-color;
+    border-radius: $form-border-radius;
+    padding: $form-padding-sm;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: $form-bg-default;
+    @include custom-scrollbar;
+}
+
+.search-field {
+    width: 100%;
+    margin-bottom: $form-padding-sm;
+}
+
+.tree-node-content {
+    display: flex;
+    align-items: center;
+}
+
+.nested-children {
+    margin-left: 32px;
+}
+
+.tree-node-label {
+    padding: 4px $form-padding-sm;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: $form-border-radius;
+    transition: background-color $form-transition-speed $form-transition-timing;
+
+    &:hover {
+        background-color: var(--tree-node-hover-bg, $tree-node-hover-bg);
+    }
+
+    &.selected {
+        background-color: var(--tree-node-selected-bg, $tree-node-selected-bg);
+        font-weight: $form-font-weight-medium;
+    }
+
+    &.leaf {
+        margin-left: 4px;
+    }
+}
+
+/* Expand icon rotation when expanded */
+button.mat-icon-button.expanded .mat-icon {
+    transform: rotate(90deg);
+    transition: transform 200ms ease-in-out;
+}
+
+.loading-indicator,
+.empty-message {
+    padding: $form-padding-lg;
+    text-align: center;
+    color: $form-text-muted;
+}
+
+.error-msg {
+    @include error-message;
+}
+
+mat-tree {
+    background: transparent;
+}
+
+mat-tree-node {
+    min-height: $form-input-height;
+}
