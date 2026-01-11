@@ -16,8 +16,6 @@ import { FormContentService } from '../../../core/services/form-content.service'
 import { FormContentSignals } from '../../../core/models/form-content.interface';
 import { FormAction } from '../../../core/models/form-schema.interface';
 import { DynamicFormComponent } from '../dynamic-form/dynamic-form.component';
-import { FormHeaderComponent } from '../form-header/form-header.component';
-import { SpinnerComponent } from '../spinner/spinner.component';
 
 export interface GenericFormConfig {
     /** Form ID to load from backend */
@@ -69,43 +67,23 @@ export interface GenericFormConfig {
 @Component({
     selector: 'lib-generic-form',
     standalone: true,
-    imports: [CommonModule, DynamicFormComponent, FormHeaderComponent, SpinnerComponent],
+    imports: [CommonModule, DynamicFormComponent],
     template: `
+        <!-- Note: Wrap this component in app-crud-form-layout for header/spinner/alerts -->
         <div class="generic-form-container">
-            @if (showHeader) {
-            <lib-form-header [formState]="formState" [loadingTitle]="'Loading form...'" />
-            }
-
-            <!-- Loading Spinner -->
-            <div class="content-area">
-                <lib-spinner
-                    [show]="formState.isLoading()"
-                    [message]="'Loading form...'"
-                    [overlay]="false"
+            @if (formState.content(); as content) {
+            <div class="form-wrapper">
+                <!-- Key tracking for form reset on entity change -->
+                @for (item of [content]; track getTrackingValue(item.data)) {
+                <app-dynamic-form
+                    [schema]="content.schema"
+                    [initialData]="content.data"
+                    [actions]="resolvedActions"
+                    (formReady)="onFormReady($event)"
                 />
-
-                <!-- Form Content -->
-                @if (formState.content(); as content) {
-                <div class="form-wrapper">
-                    <!-- Key tracking for form reset on entity change -->
-                    @for (item of [content]; track getTrackingValue(item.data)) {
-                    <app-dynamic-form
-                        [schema]="content.schema"
-                        [initialData]="content.data"
-                        [actions]="resolvedActions"
-                        (formReady)="onFormReady($event)"
-                    />
-                    }
-                </div>
-                }
-
-                <!-- Load Error -->
-                @if (formState.hasLoadError()) {
-                <div class="error-container">
-                    <p class="error-message">{{ formState.state().loadError }}</p>
-                </div>
                 }
             </div>
+            }
         </div>
     `,
     styleUrls: ['./generic-form.component.scss'],

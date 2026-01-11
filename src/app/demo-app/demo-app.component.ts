@@ -1,7 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, DestroyRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
-import { GenericFormComponent, FormAction } from 'form-lib';
+import { GenericFormComponent, FormAction, FormContentService } from 'form-lib';
+import { CrudFormLayoutComponent } from '../shared/layout/crud-form-layout.component';
+import { FormLayoutComponent } from '../shared/layout/form-layout.component';
 
 /**
  * Demo App Component - Simplified with GenericFormComponent
@@ -19,21 +23,45 @@ import { GenericFormComponent, FormAction } from 'form-lib';
 @Component({
     selector: 'app-demo-app',
     standalone: true,
-    imports: [CommonModule, GenericFormComponent],
+    imports: [CommonModule, GenericFormComponent, CrudFormLayoutComponent, FormLayoutComponent],
     template: `
-        <!-- Simple: Just pass route data and handle save events -->
-        <lib-generic-form
-            [showHeader]="true"
-            [saveSuccessMessage]="'Employee data saved successfully!'"
-            [trackByField]="'employee.id'"
-            [customActions]="customActions"
-            (formReady)="onFormReady($event)"
-            (save)="onSaveCustom($event)"
-        />
+        <!-- Page layout with header/footer -->
+        <app-form-layout>
+            <!-- CRUD layout provides form header, alerts, spinner -->
+            <app-crud-form-layout
+                [formState]="formState()"
+                [showHeader]="true"
+                [loadingMessage]="'Loading employee form...'"
+            >
+                <lib-generic-form
+                    [saveSuccessMessage]="'Employee data saved successfully!'"
+                    [trackByField]="'employee.id'"
+                    [customActions]="customActions"
+                    (formReady)="onFormReady($event)"
+                    (save)="onSaveCustom($event)"
+                />
+            </app-crud-form-layout>
+        </app-form-layout>
     `,
     styles: [],
 })
-export class DemoAppComponent {
+export class DemoAppComponent implements OnInit {
+    private route = inject(ActivatedRoute);
+    private formContentService = inject(FormContentService);
+    private destroyRef = inject(DestroyRef);
+
+    // Form state exposed to layout component
+    protected formState = signal<any>(null);
+
+    ngOnInit(): void {
+        // Get form state from route data
+        this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
+            if (data['formContent']) {
+                this.formState.set(this.formContentService.createFormState(data['formContent']));
+            }
+        });
+    }
+
     // Optional: Add custom actions alongside default ones
     protected readonly customActions: FormAction[] = [
         {

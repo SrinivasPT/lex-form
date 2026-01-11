@@ -1,32 +1,19 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
-.generic-form-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: $form-font-family;
+// Layout-agnostic: Component fills 100% of parent container
+// The consuming app controls layout via wrapper components
+:host {
+    display: block;
+    width: 100%;
 }
 
-.content-area {
-    position: relative;
-    min-height: 200px;
+.generic-form-container {
+    font-family: $form-font-family;
 }
 
 .form-wrapper {
     @include card-base;
     border-radius: 8px;
     padding: 24px;
-}
-
-.error-container {
-    @include card-base;
-    border-radius: 8px;
-    padding: 24px;
-}
-
-.error-message {
-    color: $form-danger-color;
-    margin: 0;
-    text-align: center;
 }
