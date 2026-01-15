@@ -38,6 +38,9 @@ export class SchemaResolverService {
             // Config wins (Right side of spread)
             const merged = { ...libraryDef, ...config };
 
+            // Parse JSON string fields from database
+            this.parseJsonFields(merged);
+
             // Recursively resolve children for group/table/tab_group controls
             if (merged.controls) {
                 merged.controls = merged.controls.map((c) => this.resolveControl(c));
@@ -46,12 +49,77 @@ export class SchemaResolverService {
         }
 
         // It's a purely custom control not in the library
+        // Parse JSON string fields from database
+        this.parseJsonFields(config);
+
         // Recursively resolve children if present
         if (config.controls) {
             config.controls = config.controls.map((c) => this.resolveControl(c));
         }
 
         return config;
+    }
+
+    /**
+     * Parse JSON string fields from database into objects
+     * Handles: additionalSettings, width, options, validators, etc.
+     * Uses 'any' type to handle dynamic properties across different control types
+     */
+    private parseJsonFields(control: ControlDefinition): void {
+        const ctrl = control as any;
+
+        // Parse additionalSettings if it's a string (for table controls)
+        if (typeof ctrl.additionalSettings === 'string') {
+            try {
+                ctrl.additionalSettings = JSON.parse(ctrl.additionalSettings);
+            } catch (e) {
+                console.error(
+                    `Failed to parse additionalSettings for control ${control.code}:`,
+                    ctrl.additionalSettings,
+                    e
+                );
+                ctrl.additionalSettings = undefined;
+            }
+        }
+
+        // Parse width if it's a JSON string like "[12, 6, 4]"
+        if (typeof control.width === 'string' && control.width.startsWith('[')) {
+            try {
+                control.width = JSON.parse(control.width);
+            } catch (e) {
+                console.error(
+                    `Failed to parse width for control ${control.code}:`,
+                    control.width,
+                    e
+                );
+            }
+        }
+
+        // Parse options if it's a string (less common, but possible)
+        if (typeof control.options === 'string') {
+            try {
+                control.options = JSON.parse(control.options);
+            } catch (e) {
+                console.error(
+                    `Failed to parse options for control ${control.code}:`,
+                    control.options,
+                    e
+                );
+            }
+        }
+
+        // Parse validators if it's a string
+        if (typeof control.validators === 'string') {
+            try {
+                control.validators = JSON.parse(control.validators);
+            } catch (e) {
+                console.error(
+                    `Failed to parse validators for control ${control.code}:`,
+                    control.validators,
+                    e
+                );
+            }
+        }
     }
 
     private createFallback(key: string): ControlDefinition {

@@ -1,4 +1,6 @@
-UPDATE dbo.control_group SET data_path = null
+UPDATE dbo.control_group 
+SET data_path = null,
+additional_settings = '{"visibleColumns": ["code", "type", "key", "label", "sortOrder", "width", "source_table", "source_column" ]}'
 WHERE control_code = 'control_form_section' AND child_control_code = 'control.table';
 GO
 

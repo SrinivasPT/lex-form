@@ -41,6 +41,16 @@ export interface TablePaginationConfig {
     pageSize: number;
 }
 
+export interface TableAdditionalSettings {
+    visibleColumns?: string[]; // Column keys to show (if present, only these are visible)
+    hiddenColumns?: string[]; // Column keys to hide
+    columnWidths?: {
+        [columnKey: string]: string; // e.g., "25%", "200px"
+    };
+    minColumnWidth?: string; // e.g., "100px" - minimum for auto-calculated columns
+    responsiveBreakpoint?: number; // When to switch to mobile view
+}
+
 export interface TableConfig extends ControlDefinition {
     type: 'table';
 
@@ -59,6 +69,10 @@ export interface TableConfig extends ControlDefinition {
 
     // New: Mobile Strategy
     mobileBehavior?: 'scroll' | 'card' | 'accordion'; // Default: 'card'
+
+    // Additional Settings for column visibility and widths
+    // Parsed from JSON string at schema resolution level
+    additionalSettings?: TableAdditionalSettings;
 }
 
 // 2. The Control Definitions

@@ -29,6 +29,7 @@ BEGIN
             COALESCE(cg.required_when, c.required_when) AS requiredWhen,
             COALESCE(cg.is_readonly, c.is_readonly) AS readonly,
             COALESCE(cg.is_required, c.is_required) AS required,
+            cg.additional_settings AS additionalSettings,
             c.min_val AS min,
             c.max_val AS max,
             c.min_length AS minLength,
