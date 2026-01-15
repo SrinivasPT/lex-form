@@ -1052,8 +1052,51 @@ PRINT 'Control Form schema created successfully!'
 GO
 
 -- =============================================
--- EMPLOYEE FORM CREATION
+-- Configure visibility and requirement conditions
 -- =============================================
 
-GO
 
+UPDATE dbo.control_group SET visible_when = 'model.type == "SELECT"', required_when = 'model.type == "SELECT"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.category_code'
+
+-- dependent_on
+UPDATE dbo.control_group SET visible_when = 'model.type == "SELECT"', required_when = 'model.type == "SELECT"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.dependent_on'
+
+-- min_val
+UPDATE dbo.control_group SET visible_when = 'model.type == "NUMBER"', required_when = 'model.type == "NUMBER"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.min_val'
+
+-- max_val
+UPDATE dbo.control_group SET visible_when = 'model.type == "NUMBER"', required_when = 'model.type == "NUMBER"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.max_val'
+
+-- min_length
+UPDATE dbo.control_group SET visible_when = 'model.type == "TEXT"', required_when = 'model.type == "TEXT"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.min_length'
+
+-- max_length
+UPDATE dbo.control_group SET visible_when = 'model.type == "TEXT"', required_when = 'model.type == "TEXT"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.max_length'
+
+-- pattern
+UPDATE dbo.control_group SET visible_when = 'model.type == "TEXT"', required_when = 'model.type == "TEXT"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.pattern'
+
+-- source_table
+UPDATE dbo.control_group SET visible_when = 'model.atomic_level_code == "COLUMN"', required_when = 'model.atomic_level_code == "COLUMN"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.source_table'
+
+-- source_column
+UPDATE dbo.control_group SET visible_when = 'model.atomic_level_code == "COLUMN"', required_when = 'model.atomic_level_code == "COLUMN"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.source_column'
+
+-- source_data_type
+UPDATE dbo.control_group SET visible_when = 'model.atomic_level_code == "COLUMN"', required_when = 'model.atomic_level_code == "COLUMN"'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.source_data_type'
+
+-- properties_json
+UPDATE dbo.control_group SET visible_when = '["FILE", "TABLE", "RADIO", "CHECKBOX"].includes(model.type)', required_when = '["FILE", "TABLE", "RADIO", "CHECKBOX"].includes(model.type)'
+WHERE control_code = 'control_form_section' AND child_control_code = 'control.properties_json'
+
+GO

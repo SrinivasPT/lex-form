@@ -118,6 +118,14 @@ CREATE TABLE dbo.control_group (
     child_control_code VARCHAR(128) NOT NULL, -- The control it relates to
     data_path VARCHAR(255) NULL,
     width NVARCHAR(MAX), -- Storing as JSON is cleaner than columns:  [12, 6, 4] for Mobile, Tablet, Desktop
+
+    -- Expressions for dynamic behavior
+    visible_when NVARCHAR(MAX),
+    disabled_when NVARCHAR(MAX),
+    required_when NVARCHAR(MAX),
+    is_required BIT DEFAULT 0,
+    is_readonly BIT DEFAULT 0,
+
     sort_order INT DEFAULT 0,
     additional_settings NVARCHAR(MAX), -- JSON for complex layouts (e.g., Table columns, Group layouts)
 

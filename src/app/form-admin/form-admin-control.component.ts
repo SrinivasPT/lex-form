@@ -112,7 +112,7 @@ export class FormAdminControlComponent implements OnInit {
         this.error.set(null);
 
         const formCodeValue = this.formCode();
-        const hierarchyCode = `${formCodeValue}_root`; // e.g., control_form_root
+        const hierarchyCode = `${formCodeValue}`; // e.g., employee_form
 
         forkJoin({
             schema: this.formDataService.getFormSchema('control_form'),
@@ -120,7 +120,7 @@ export class FormAdminControlComponent implements OnInit {
             allControls: this.formDataService.getAllControls(),
         })
             .pipe(
-                tap((data) => {
+                switchMap((data) => {
                     this.treeConfig.set({
                         key: 'treeField',
                         type: 'tree',
@@ -136,7 +136,15 @@ export class FormAdminControlComponent implements OnInit {
                     this.schema.set(data.schema);
                     this.allControls.set(data.allControls);
                     this.selectedNodeCode.set(rootCode);
-                    this.isInitialLoading.set(false);
+
+                    // Load form data for initial root node
+                    return this.formDataService.getFormData(rootCode).pipe(
+                        tap((formData) => {
+                            this.initialValues.set(formData);
+                            this.selectedNodeData.set(formData);
+                            this.isInitialLoading.set(false);
+                        })
+                    );
                 }),
                 catchError((err) => {
                     console.error('Failed to load form configuration', err);

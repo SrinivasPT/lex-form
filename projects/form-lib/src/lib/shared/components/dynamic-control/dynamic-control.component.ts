@@ -2,7 +2,9 @@ import {
     Component,
     Input,
     OnInit,
+    OnChanges,
     OnDestroy,
+    SimpleChanges,
     inject,
     signal,
     HostBinding,
@@ -84,7 +86,7 @@ import { TabGroupComponent } from '../tab-group/tab-group.component';
     `,
     styleUrls: ['./dynamic-control.component.scss'],
 })
-export class DynamicControlComponent implements OnInit, OnDestroy {
+export class DynamicControlComponent implements OnInit, OnChanges, OnDestroy {
     @Input({ required: true }) config!: ControlDefinition;
     @Input({ required: true }) group!: FormGroup;
 
@@ -195,17 +197,36 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.initializeControl();
+    }
+
+    /**
+     * React to input changes when parent updates config or group.
+     * Critical: Parent may patch form values without changing config reference,
+     * so we also subscribe to valueChanges to catch those updates.
+     */
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['config'] || changes['group']) {
+            this.sub?.unsubscribe();
+            this.initializeControl();
+        }
+    }
+
+    /**
+     * Initialize or re-initialize the control.
+     * Handles control resolution, parent group setup, and reactive evaluations for:
+     * - Static readonly property
+     * - Dynamic disabledWhen expressions
+     * - Dynamic visibleWhen expressions
+     */
+    private initializeControl() {
         // For group/tab_group controls without a key, skip control resolution - it's just a logical container
         if (
             (this.normalizedType === 'group' || this.normalizedType === 'tab_group') &&
             !this.config.key
         ) {
-            this.resolvedControl.set(this.group); // Set to current group for rendering
-            this.wrapperGroup.set(this.group); // Pass through the parent group
-            console.log(
-                `[DynamicControl] Keyless ${this.normalizedType} - using parent group:`,
-                this.group
-            );
+            this.resolvedControl.set(this.group);
+            this.wrapperGroup.set(this.group);
             return;
         }
 
@@ -213,70 +234,87 @@ export class DynamicControlComponent implements OnInit, OnDestroy {
         const control = this.formGenerator.getControl(this.group, this.config.key);
         this.resolvedControl.set(control);
 
-        console.log(`[DynamicControl] ${this.config.key} (${this.config.type}):`, {
-            control,
-            controlParent: control?.parent,
-            group: this.group,
-            groupValue: this.group.value,
-        });
-
         if (!control) {
             console.warn(`Control not found for key: ${this.config.key}`);
             return;
         }
 
-        // For child components, we need to pass the parent FormGroup that contains the control
-        // NOT a wrapper, but the actual parent from the form tree
+        // Set wrapper group to the control's parent for proper FormControl binding
         const parentGroup = control.parent as FormGroup;
         if (parentGroup) {
             this.wrapperGroup.set(parentGroup);
-            console.log(`[DynamicControl] ${this.config.key} using parent group:`, {
-                parentGroup,
-                parentValue: parentGroup.value,
-            });
-        } else {
-            console.warn(`No parent group found for control: ${this.config.key}`);
         }
 
-        // If there is no visibility rule, we are always visible.
-        if (!this.config.visibleWhen) {
+        // Get root form for reactive evaluations
+        const rootForm = this.group.root as FormGroup;
+
+        // Initial evaluation of disabled state (static readonly or dynamic disabledWhen)
+        this.evaluateDisabled(rootForm.value, control);
+
+        // Clean up previous subscription
+        this.sub?.unsubscribe();
+
+        // If there are no dynamic rules AND no static readonly, we're done
+        if (!this.config.visibleWhen && !this.config.disabledWhen && !this.config.readonly) {
             return;
         }
 
-        // LISTENER: We need to watch the ROOT form for changes.
-        // Why Root? Because "visibleWhen" might depend on a field in a different section.
-        // e.g. "Show State if Country (in section A) is US"
-        const rootForm = this.group.root as FormGroup;
-
-        this.sub = rootForm.valueChanges
-            .pipe(
-                // Trigger immediately with current value
-                startWith(rootForm.value)
-            )
-            .subscribe((rootValue) => {
+        /**
+         * Subscribe to root form value changes to re-evaluate dynamic rules.
+         * This handles:
+         * 1. Dynamic expressions that depend on other fields (visibleWhen, disabledWhen)
+         * 2. Form data updates when parent patches new values (e.g., switching between records)
+         * 3. Static readonly re-evaluation when form context changes
+         */
+        this.sub = rootForm.valueChanges.pipe(startWith(rootForm.value)).subscribe((rootValue) => {
+            if (this.config.visibleWhen) {
                 this.evaluateVisibility(rootValue, control);
-            });
+            }
+            if (this.config.disabledWhen || this.config.readonly) {
+                this.evaluateDisabled(rootValue, control);
+            }
+        });
     }
 
     private evaluateVisibility(rootModel: any, control: AbstractControl) {
-        // 1. Prepare Context
-        // Global context: "model.firstName"
-        // We could also add local context here if needed
         const context = { model: rootModel };
-
-        // 2. Evaluate
         const result = this.evaluator.evaluate(this.config.visibleWhen, context);
 
-        // 3. Update Signal
         this.isVisible.set(result);
 
-        // OPTIONAL: If invisible, should we disable the control
-        // so it doesn't block form validation?
+        // Disable invisible controls to prevent them from blocking form validation
         if (control) {
             if (result) {
                 control.enable({ emitEvent: false });
             } else {
                 control.disable({ emitEvent: false });
+            }
+        }
+    }
+
+    /**
+     * Evaluates disabled/readonly state for the control.
+     * Priority: Dynamic disabledWhen expression > Static readonly property
+     */
+    private evaluateDisabled(rootModel: any, control: AbstractControl) {
+        if (!control) return;
+
+        const context = { model: rootModel };
+        let shouldDisable = false;
+
+        // Dynamic disabledWhen takes precedence over static readonly
+        if (this.config.disabledWhen) {
+            shouldDisable = this.evaluator.evaluate(this.config.disabledWhen, context);
+        } else if (this.config.readonly) {
+            shouldDisable = true;
+        }
+
+        // Only enable/disable if control is visible (visibility takes precedence)
+        if (this.isVisible()) {
+            if (shouldDisable) {
+                control.disable({ emitEvent: false });
+            } else {
+                control.enable({ emitEvent: false });
             }
         }
     }

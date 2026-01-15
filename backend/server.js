@@ -52,10 +52,21 @@ app.get('/form/:formCode', async (req, res) => {
             f.label,
             JSON_QUERY((
                 SELECT
-                    c.label,
+                    c.code,
+                    c.atomic_level_code AS atomicLevelCode,
+                    c.type,
                     c.[key],
-                    c.[type],
-                    c.width AS width,
+                    c.label,
+                    c.placeholder,
+                    c.help_text AS helpText,
+                    c.sort_order AS sortOrder,
+                    c.width,
+                    c.visible_when AS visibleWhen,
+                    c.disabled_when AS disabledWhen,
+                    c.is_required AS required,
+                    c.is_readonly AS readonly,
+                    c.properties_json AS properties,
+                    c.guid,
                     JSON_QUERY(dbo.fn_GetControlChildren(c.code)) AS controls
                 FROM dbo.control c
                 WHERE c.form_code = f.code
@@ -132,25 +143,33 @@ app.get('/control/:controlCode', async (req, res) => {
         const query = `
         SELECT
             c.code,
-            c.[key],
+            c.atomic_level_code AS atomicLevelCode,
             c.type,
+            c.[key],
             c.label,
             c.placeholder,
             c.help_text AS helpText,
-            c.is_required AS required,
-            c.is_readonly AS readonly,
-            c.width AS width,
-            c.min_val AS min,
-            c.max_val AS max,
-            c.min_length AS minLength,
-            c.max_length AS maxLength,
-            c.pattern,
+            c.sort_order AS sortOrder,
+            c.width,
+            c.source_table AS sourceTable,
+            c.source_column AS sourceColumn,
+            c.source_data_type AS sourceDataType,
             c.category_code AS categoryCode,
             c.dependent_on AS dependentOn,
             c.visible_when AS visibleWhen,
             c.disabled_when AS disabledWhen,
             c.required_when AS requiredWhen,
+            c.is_required AS required,
+            c.is_readonly AS readonly,
+            c.min_val AS min,
+            c.max_val AS max,
+            c.min_length AS minLength,
+            c.max_length AS maxLength,
+            c.pattern,
             c.properties_json AS properties,
+            c.guid,
+            c.sys_start_time AS sysStartTime,
+            c.sys_end_time AS sysEndTime,
             JSON_QUERY(dbo.fn_GetControlChildren(c.code)) AS controls
         FROM dbo.control c
         WHERE c.code = @controlCode
@@ -189,7 +208,7 @@ app.get('/form/hierarchy/:rootControl', async (req, res) => {
                 0 AS level,
                 CAST(c.code AS VARCHAR(MAX)) AS path
             FROM dbo.control c
-            WHERE c.code = @rootControl
+            WHERE c.form_code = @rootControl
 
             UNION ALL
 
