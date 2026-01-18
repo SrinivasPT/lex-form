@@ -78,7 +78,7 @@ router.get(
             if (!result || result.length === 0) {
                 return res.status(404).json(ResponseFormatter.error('Control not found', 404));
             }
-            return res.json(result[0]);
+            return res.json(ResponseFormatter.success(result));
         }
 
         const control = await controlService.getControlByCode(code);

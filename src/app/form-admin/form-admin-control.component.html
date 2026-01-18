@@ -19,6 +19,24 @@
                 <mat-icon>link</mat-icon>
                 Associate Controls
             </button>
+            <button
+                mat-raised-button
+                color="primary"
+                (click)="onHeaderSave()"
+                [disabled]="!selectedNodeCode() || isFormDataLoading() || !isFormDirty()"
+            >
+                <mat-icon>save</mat-icon>
+                Save
+            </button>
+            <button
+                mat-raised-button
+                color="warn"
+                (click)="onDelete()"
+                [disabled]="!canShowContextMenu() || isFormDataLoading()"
+            >
+                <mat-icon>delete</mat-icon>
+                Delete
+            </button>
         </div>
     </header>
 
@@ -26,46 +44,51 @@
         <!-- Tree Navigation Panel -->
         <aside class="tree-panel" role="navigation" aria-label="Form navigation">
             @if (isInitialLoading()) {
-            <p class="loading-message" role="status" aria-live="polite">Loading tree...</p>
+                <p class="loading-message" role="status" aria-live="polite">Loading tree...</p>
             } @else {
-            <form [formGroup]="formGroup">
-                <div
-                    class="tree-wrapper"
-                    (contextmenu)="onTreeContextMenu($event, selectedNodeCode()!)"
-                >
-                    <app-tree-control
-                        [config]="treeConfig()"
-                        [group]="formGroup"
-                    ></app-tree-control>
-                </div>
-                <div class="tree-selection-info">
-                    <h3>Selected Node:</h3>
-                    <pre>{{ selectedNodeCode() || 'None' }}</pre>
-                </div>
-            </form>
+                <form [formGroup]="formGroup">
+                    <div
+                        class="tree-wrapper"
+                        (contextmenu)="onTreeContextMenu($event, selectedNodeCode()!)"
+                    >
+                        <app-tree-control
+                            [config]="treeConfig()"
+                            [group]="formGroup"
+                        ></app-tree-control>
+                    </div>
+                    <div class="tree-selection-info">
+                        <h3>Selected Node:</h3>
+                        <pre>{{ selectedNodeCode() || 'None' }}</pre>
+                    </div>
+                </form>
             }
         </aside>
 
         <!-- Main Form Panel -->
         <main class="form-panel" role="main">
             @if (isInitialLoading()) {
-            <p class="loading-message" role="status" aria-live="polite">Loading form...</p>
+                <p class="loading-message" role="status" aria-live="polite">Loading form...</p>
             } @else if (error()) {
-            <div class="error-message" role="alert" aria-live="assertive">
-                {{ error() }}
-            </div>
-            } @else { @if (isFormDataLoading()) {
-            <p class="loading-message" role="status" aria-live="polite">Loading form data...</p>
-            } @if (schema()) {
-            <app-dynamic-form
-                [schema]="schema()!"
-                [initialData]="initialValues()"
-                [actions]="formActions"
-                (formReady)="onFormReady($event)"
-                [attr.aria-busy]="isFormDataLoading()"
-            >
-            </app-dynamic-form>
-            } }
+                <div class="error-message" role="alert" aria-live="assertive">
+                    {{ error() }}
+                </div>
+            } @else {
+                @if (isFormDataLoading()) {
+                    <p class="loading-message" role="status" aria-live="polite">
+                        Loading form data...
+                    </p>
+                }
+                @if (schema()) {
+                    <app-dynamic-form
+                        [schema]="schema()!"
+                        [initialData]="initialValues()"
+                        [actions]="[]"
+                        (formReady)="onFormReady($event)"
+                        [attr.aria-busy]="isFormDataLoading()"
+                    >
+                    </app-dynamic-form>
+                }
+            }
         </main>
     </div>
 </div>

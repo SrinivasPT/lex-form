@@ -67,14 +67,18 @@ export class FormDataService {
      * Get form data for a specific control/record
      */
     getFormData(controlCode: string): Observable<any> {
-        return this.http.get<{success: boolean, data: any}>(`${this.baseUrl}/controls/${controlCode}`).pipe(
-            map(response => response.data),
-            tap((data) => console.log(`Form data loaded: ${controlCode}`, data)),
-            catchError((err) => {
-                console.error(`Error loading form data ${controlCode}:`, err);
-                return of({});
-            }),
-        );
+        return this.http
+            .get<{ success: boolean; data: any }>(`${this.baseUrl}/controls/${controlCode}`, {
+                params: { includeChildren: 'true' },
+            })
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log(`Form data loaded: ${controlCode}`, data)),
+                catchError((err) => {
+                    console.error(`Error loading form data ${controlCode}:`, err);
+                    return of({});
+                }),
+            );
     }
 
     /**
@@ -159,56 +163,72 @@ export class FormDataService {
      * Create new control (SECTION/TAB/GROUP)
      */
     createControl(controlData: any): Observable<any> {
-        return this.http.post<{success: boolean, data: any}>(`${this.baseUrl}/controls`, controlData).pipe(
-            map(response => response.data),
-            tap((data) => console.log('Control created:', data)),
-            catchError((err) => {
-                console.error('Error creating control:', err);
-                throw err;
-            }),
-        );
+        return this.http
+            .post<{ success: boolean; data: any }>(`${this.baseUrl}/controls`, controlData)
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log('Control created:', data)),
+                catchError((err) => {
+                    console.error('Error creating control:', err);
+                    throw err;
+                }),
+            );
     }
 
     /**
      * Update control metadata
      */
     updateControl(code: string, updateData: any): Observable<any> {
-        return this.http.put<{success: boolean, data: any, message?: string}>(`${this.baseUrl}/controls/${code}`, updateData).pipe(
-            map(response => response.data),
-            tap((data) => console.log('Control updated:', data)),
-            catchError((err) => {
-                console.error('Error updating control:', err);
-                throw err;
-            }),
-        );
+        return this.http
+            .put<{
+                success: boolean;
+                data: any;
+                message?: string;
+            }>(`${this.baseUrl}/controls/${code}`, updateData)
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log('Control updated:', data)),
+                catchError((err) => {
+                    console.error('Error updating control:', err);
+                    throw err;
+                }),
+            );
     }
 
     /**
      * Delete control (removes association for BASE, deletes control for SECTION if no dependencies)
      */
     deleteControl(code: string): Observable<any> {
-        return this.http.delete<{success: boolean, data: any, message?: string}>(`${this.baseUrl}/controls/${code}`).pipe(
-            map(response => response.data),
-            tap((data) => console.log('Control deleted:', data)),
-            catchError((err) => {
-                console.error('Error deleting control:', err);
-                throw err;
-            }),
-        );
+        return this.http
+            .delete<{
+                success: boolean;
+                data: any;
+                message?: string;
+            }>(`${this.baseUrl}/controls/${code}`)
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log('Control deleted:', data)),
+                catchError((err) => {
+                    console.error('Error deleting control:', err);
+                    throw err;
+                }),
+            );
     }
 
     /**
      * Check if control can be deleted
      */
     canDeleteControl(code: string): Observable<any> {
-        return this.http.get<{success: boolean, data: any}>(`${this.baseUrl}/controls/${code}/can-delete`).pipe(
-            map(response => response.data),
-            tap((data) => console.log('Delete check:', data)),
-            catchError((err) => {
-                console.error('Error checking delete eligibility:', err);
-                throw err;
-            }),
-        );
+        return this.http
+            .get<{ success: boolean; data: any }>(`${this.baseUrl}/controls/${code}/can-delete`)
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log('Delete check:', data)),
+                catchError((err) => {
+                    console.error('Error checking delete eligibility:', err);
+                    throw err;
+                }),
+            );
     }
 
     /**
@@ -225,14 +245,19 @@ export class FormDataService {
             dataPath: dataPath,
             width: width,
         };
-        return this.http.post<{success: boolean, data: any}>(`${this.baseUrl}/controls/${parentCode}/children`, payload).pipe(
-            map(response => response.data),
-            tap((data) => console.log('Associations created:', data)),
-            catchError((err) => {
-                console.error('Error creating associations:', err);
-                throw err;
-            }),
-        );
+        return this.http
+            .post<{
+                success: boolean;
+                data: any;
+            }>(`${this.baseUrl}/controls/${parentCode}/children`, payload)
+            .pipe(
+                map((response) => response.data),
+                tap((data) => console.log('Associations created:', data)),
+                catchError((err) => {
+                    console.error('Error creating associations:', err);
+                    throw err;
+                }),
+            );
     }
 
     /**
@@ -240,9 +265,13 @@ export class FormDataService {
      */
     deleteControlAssociation(parentCode: string, childCode: string): Observable<any> {
         return this.http
-            .delete<{success: boolean, data: any, message?: string}>(`${this.baseUrl}/controls/${parentCode}/children/${childCode}`)
+            .delete<{
+                success: boolean;
+                data: any;
+                message?: string;
+            }>(`${this.baseUrl}/controls/${parentCode}/children/${childCode}`)
             .pipe(
-                map(response => response.data),
+                map((response) => response.data),
                 tap((data) => console.log('Association deleted:', data)),
                 catchError((err) => {
                     console.error('Error deleting association:', err);

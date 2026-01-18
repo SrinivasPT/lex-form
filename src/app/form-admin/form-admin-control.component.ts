@@ -79,22 +79,6 @@ export class FormAdminControlComponent implements OnInit {
     });
     protected readonly allControls = signal<any[]>([]);
 
-    protected readonly formActions: FormAction[] = [
-        {
-            label: 'Save',
-            type: 'submit',
-            disabled: (form) => form.invalid || this.isFormDataLoading(),
-            handler: (form) => this.onSave(form),
-            class: 'btn-primary',
-        },
-        {
-            label: 'Reset',
-            type: 'reset',
-            handler: (form) => this.onReset(form),
-            class: 'btn-secondary',
-        },
-    ];
-
     ngOnInit(): void {
         // Get form code from route parameter
         this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -143,7 +127,7 @@ export class FormAdminControlComponent implements OnInit {
                             this.initialValues.set(formData);
                             this.selectedNodeData.set(formData);
                             this.isInitialLoading.set(false);
-                        })
+                        }),
                     );
                 }),
                 catchError((err) => {
@@ -153,7 +137,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.isInitialLoading.set(false);
                     return of(null);
                 }),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe();
     }
@@ -174,7 +158,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.error.set(null);
                     this.loadingTimeout = window.setTimeout(
                         () => this.isFormDataLoading.set(true),
-                        300
+                        300,
                     );
                 }),
                 switchMap((selectedCode) =>
@@ -184,10 +168,10 @@ export class FormAdminControlComponent implements OnInit {
                             this.error.set('Failed to load form data.');
                             this.toastService.error('Failed to load form data');
                             return of({});
-                        })
-                    )
+                        }),
+                    ),
                 ),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe((data) => {
                 if (this.loadingTimeout) {
@@ -297,7 +281,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.isFormDataLoading.set(false);
                     return of(null);
                 }),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe();
     }
@@ -352,7 +336,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.isFormDataLoading.set(false);
                     return of(null);
                 }),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe();
     }
@@ -389,7 +373,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.isFormDataLoading.set(false);
                     return of(null);
                 }),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe();
     }
@@ -422,7 +406,7 @@ export class FormAdminControlComponent implements OnInit {
                     this.isFormDataLoading.set(false);
                     return of(null);
                 }),
-                takeUntilDestroyed(this.destroyRef)
+                takeUntilDestroyed(this.destroyRef),
             )
             .subscribe();
     }
@@ -431,7 +415,26 @@ export class FormAdminControlComponent implements OnInit {
         this.form.set(form);
     }
 
-    protected onSave(form: FormGroup): void {
+    /**
+     * Check if form is dirty (has unsaved changes)
+     */
+    protected isFormDirty(): boolean {
+        return this.form()?.dirty ?? false;
+    }
+
+    /**
+     * Save handler for header button
+     */
+    protected onHeaderSave(): void {
+        const currentForm = this.form();
+        if (!currentForm) return;
+        this.onSave(currentForm);
+    }
+
+    /**
+     * Save form data
+     */
+    private onSave(form: FormGroup): void {
         const selectedCode = this.selectedNodeCode();
         if (!selectedCode || form.invalid) return;
 
@@ -449,8 +452,10 @@ export class FormAdminControlComponent implements OnInit {
                 },
                 error: (err) => {
                     console.error('Failed to save form', err);
-                    this.error.set('Failed to save form. Please try again.');
-                    this.toastService.error('Failed to save control');
+                    const errorMsg =
+                        err.error?.error || err.error?.reason || err.message || 'Unknown error';
+                    this.error.set(`Failed to save: ${errorMsg}`);
+                    this.toastService.error(`Failed to save: ${errorMsg}`);
                     this.isFormDataLoading.set(false);
                 },
             });
