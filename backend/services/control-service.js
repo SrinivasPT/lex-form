@@ -43,36 +43,28 @@ async function getControlAtomicLevel(code) {
     return result.recordset.length > 0 ? result.recordset[0].atomic_level_code : null;
 }
 
-/**
- * Check if control can be updated
- * @param {string} code - Control code
- * @returns {Promise<{canUpdate: boolean, reason?: string, atomicLevel?: string}>}
- */
-async function canUpdateControl(code) {
-    const atomicLevel = await getControlAtomicLevel(code);
+// /**
+//  * Check if control can be updated
+//  * @param {string} code - Control code
+//  * @returns {Promise<{canUpdate: boolean, reason?: string, atomicLevel?: string}>}
+//  */
+// async function canUpdateControl(code) {
+//     const atomicLevel = await getControlAtomicLevel(code);
 
-    if (!atomicLevel) {
-        return { canUpdate: false, reason: 'Control not found' };
-    }
+//     if (!atomicLevel) {
+//         return { canUpdate: false, reason: 'Control not found' };
+//     }
 
-    if (atomicLevel === 'BASE') {
-        return {
-            canUpdate: false,
-            reason: 'BASE controls cannot be updated',
-            atomicLevel,
-        };
-    }
+//     if (atomicLevel === 'COMPOSITE') {
+//         return {
+//             canUpdate: false,
+//             reason: 'COMPOSITE controls cannot be updated',
+//             atomicLevel,
+//         };
+//     }
 
-    if (atomicLevel === 'COMPOSITE') {
-        return {
-            canUpdate: false,
-            reason: 'COMPOSITE controls cannot be updated',
-            atomicLevel,
-        };
-    }
-
-    return { canUpdate: true, atomicLevel };
-}
+//     return { canUpdate: true, atomicLevel };
+// }
 
 /**
  * Fields configuration for control updates
@@ -111,11 +103,24 @@ const FIELD_CONFIG = {
 /**
  * Update control metadata
  * Handles updating fields in control and/or control_group tables
+ * For BASE controls: only updates control_group table (width, data_path, sort_order)
+ * For other controls: updates both control and control_group tables as needed
  * @param {string} code - Control code
  * @param {Object} updateData - Fields to update (accepts camelCase!)
  * @returns {Promise<Object>} Updated control object
  */
 async function updateControl(code, updateData) {
+    // Check if control exists and get atomic level
+    const atomicLevel = await getControlAtomicLevel(code);
+    if (!atomicLevel) {
+        throw new NotFoundError('Control not found');
+    }
+
+    // Check if COMPOSITE (cannot be updated at all)
+    if (atomicLevel === 'COMPOSITE') {
+        throw new ValidationError('COMPOSITE controls cannot be updated');
+    }
+
     // Automatic camelCase → snake_case conversion handled by DatabaseService!
     const controlUpdates = {};
     const controlGroupUpdates = {};
@@ -129,8 +134,8 @@ async function updateControl(code, updateData) {
         }
     }
 
-    // Execute control table update if needed
-    if (Object.keys(controlUpdates).length > 0) {
+    // For BASE controls: skip control table updates, only update control_group
+    if (atomicLevel !== 'BASE' && Object.keys(controlUpdates).length > 0) {
         const setClauses = Object.keys(controlUpdates)
             .map((f) => `${f} = @${f}`)
             .join(', ');
@@ -138,7 +143,7 @@ async function updateControl(code, updateData) {
         await db.executeQuery(query, { code, ...controlUpdates });
     }
 
-    // Execute control_group table update if needed
+    // Execute control_group table update if needed (applies to all atomic levels)
     if (Object.keys(controlGroupUpdates).length > 0) {
         const setClauses = Object.keys(controlGroupUpdates)
             .map((f) => `${f} = @${f}`)
@@ -238,7 +243,7 @@ module.exports = {
     getControlByCode,
     controlExists,
     getControlAtomicLevel,
-    canUpdateControl,
+    // canUpdateControl,
     updateControl,
     createControl,
     FIELD_CONFIG,

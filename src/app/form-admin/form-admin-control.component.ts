@@ -178,10 +178,19 @@ export class FormAdminControlComponent implements OnInit {
                     clearTimeout(this.loadingTimeout);
                     this.loadingTimeout = undefined;
                 }
-                this.initialValues.set(data);
-                this.selectedNodeData.set(data);
-                this.isFormDataLoading.set(false);
-                this.form()?.patchValue(data);
+
+                // Force form re-initialization by resetting schema temporarily
+                // This ensures disabled_when/visible_when conditions are re-evaluated
+                const currentSchema = this.schema();
+                this.schema.set(null);
+
+                // Use setTimeout to allow Angular to process the null schema first
+                setTimeout(() => {
+                    this.initialValues.set(data);
+                    this.selectedNodeData.set(data);
+                    this.schema.set(currentSchema);
+                    this.isFormDataLoading.set(false);
+                }, 0);
             });
     }
 

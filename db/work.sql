@@ -108,6 +108,18 @@ SET
         WHEN 'control.required_when' THEN 27
         WHEN 'control.properties_json' THEN 28
         ELSE sort_order
+    END,
+    disabled_when = CASE child_control_code
+        WHEN 'control.visible_when' THEN NULL
+        WHEN 'control.disabled_when' THEN NULL
+        WHEN 'control.required_when' THEN NULL
+        WHEN 'control.is_required' THEN NULL
+        WHEN 'control.is_readonly' THEN NULL
+        WHEN 'control.layout_config' THEN NULL
+        WHEN 'control.additional_settings' THEN NULL
+        WHEN 'control.sort_order' THEN NULL
+        WHEN 'control.width' THEN NULL
+        ELSE 'model.atomicLevelCode == "BASE"'
     END
 WHERE control_code = 'control_form_section';
 

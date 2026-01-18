@@ -112,13 +112,6 @@ router.put(
     '/:code',
     asyncHandler(async (req, res) => {
         const { code } = req.params;
-
-        // Check if control can be updated
-        const canUpdate = await controlService.canUpdateControl(code);
-        if (!canUpdate.canUpdate) {
-            return res.status(403).json(ResponseFormatter.error(canUpdate.reason, 403));
-        }
-
         const control = await controlService.updateControl(code, req.body);
         res.json(ResponseFormatter.success(control, 'Control updated successfully'));
     }),
