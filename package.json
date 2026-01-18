@@ -4,7 +4,7 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build-lib": "ng build form-lib",
+        "lib-build": "ng build form-lib",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",

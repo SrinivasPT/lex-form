@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, shareReplay, map } from 'rxjs';
 
 export interface DomainValue {
     code: string | number;
@@ -23,12 +23,24 @@ export class DomainData {
             return this.cache.get(cacheKey)!;
         }
 
-        let url = `http://localhost:3001/domain/${categoryCode}`;
+        let url = `http://localhost:3001/api/domains/${categoryCode}`;
         if (parentValue) {
             url += `?parentCode=${parentValue}`;
         }
 
-        const request$ = this.http.get<DomainValue[]>(url).pipe(shareReplay(1));
+        const request$ = this.http
+            .get<DomainValue[] | { success: boolean; data: DomainValue[] }>(url)
+            .pipe(
+                map((response) => {
+                    // Handle wrapped response {success: true, data: [...]}
+                    if (response && typeof response === 'object' && 'data' in response) {
+                        return response.data;
+                    }
+                    // Handle direct array response
+                    return response as DomainValue[];
+                }),
+                shareReplay(1),
+            );
 
         this.cache.set(cacheKey, request$);
         return request$;
